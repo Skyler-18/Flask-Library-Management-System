@@ -1,0 +1,81 @@
+{% extends 'layout.html' %}
+
+{% block title %}
+    Login
+{% endblock %}
+
+{% block style %}
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Permanent+Marker&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Laila:wght@300;400;500;600;700&family=Permanent+Marker&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Laila:wght@300;400;500;600;700&family=Lusitana:wght@400;700&family=Permanent+Marker&display=swap');
+
+        *{
+            margin: 0;
+            padding: 0;
+        }
+        
+        body{
+            text-align: center;
+            background-color: #D2FFFC;
+            font-family: "Lusitana", serif;
+            margin-bottom: 1rem;
+        }
+
+        .logo{
+            color: purple;
+            font-family: "Permanent Marker", cursive;
+            font-weight: 300;
+            font-size: 5rem;
+            background-color: #FCF54D;
+        }
+
+        h1{
+            font-family: "Laila", serif;
+            font-size: 2.2rem;
+            margin-bottom: 2rem;
+        }
+
+        .form{
+            margin-top: 2rem;
+            font-size: 1.7rem;
+        }
+
+        .form-control{
+            width: 30rem;
+            margin: 0 auto;
+        }
+
+        .btn{
+            margin-top: 2rem;
+            background-color: #BAEE76;
+            color: black;
+            font-size: 1.5rem;
+            font-weight: 700;
+            width: 15rem;
+        }
+
+    </style>
+{% endblock %}
+
+{% block body %}
+    <h1 class="logo">Apni Library</h1>
+
+    <form class="form">
+        <h1>User Login</h1>
+
+        <div>
+            <label for="username" class="col-form-label">Username</label>
+            <input type="text" name="username" placeholder="Enter your username" class="form-control" required>
+        </div>
+        <!-- <br> -->
+        <div>
+            <label for="password" class="col-form-label">Password</label>
+            <input type="password" name="password" placeholder="Enter your password" class="form-control" required>
+        </div>
+
+        <div class="col-auto">
+            <button type="submit" class="btn btn-success">LOGIN</button>
+        </div>
+    </form>
+{% endblock %}

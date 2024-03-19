@@ -1,0 +1,143 @@
+{% extends 'layout.html' %}
+
+{% block title %}
+    Login
+{% endblock %}
+
+{% block style %}
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Permanent+Marker&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Laila:wght@300;400;500;600;700&family=Permanent+Marker&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Laila:wght@300;400;500;600;700&family=Lusitana:wght@400;700&family=Permanent+Marker&display=swap');
+
+        *{
+            margin: 0;
+            padding: 0;
+        }
+        
+        body{
+            text-align: center;
+            background-color: #D2FFFC;
+            font-family: "Lusitana", serif;
+            margin-bottom: 1rem;
+        }
+
+        .navbar{
+            margin: 0;
+            padding: 0;
+        }
+
+        .custom-navbar{
+            height: 5rem;
+            display: flex;
+            align-items: center;
+            font-size: 2rem;
+        }
+
+        .container-fluid{
+            background-color: #FCF54D;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+        }
+
+        .logo-box{
+            display: flex;
+            align-items: center;
+            margin-top: 1rem;
+            justify-content: center;
+        }
+
+        .logo{
+            color: purple;
+            font-family: "Permanent Marker", cursive;
+            font-weight: 300;
+            font-size: 5rem;
+            background-color: #FCF54D;
+        }
+
+        h1{
+            font-family: "Laila", serif;
+            font-size: 2.2rem;
+            margin-bottom: 2rem;
+        }
+
+        .form{
+            margin-top: 2rem;
+            font-size: 1.7rem;
+        }
+
+        .form-control{
+            width: 30rem;
+            margin: 0 auto;
+        }
+
+        .btn{
+            margin-top: 2rem;
+            background-color: #BAEE76;
+            color: black;
+            font-size: 1.5rem;
+            font-weight: 700;
+            width: 15rem;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <!-- <div class="mynavbar"> -->
+        <nav class="navbar navbar-expand-lg custom-navbar">
+            <div class="container">
+              <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                  <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" href="#">Register</a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="#">Login</a>
+                  </li>
+                </ul>
+              </div>
+
+              <div class="logo-box">
+                  <a class="navbar-brand" href="#"><h1 class="logo">Apni Library</h1></a>
+              </div>
+            </div>
+        </nav>
+          
+    <!-- </div> -->
+
+    <form class="form">
+        <h1>Register</h1>
+
+        <div>
+            <label for="username" class="col-form-label">Username</label>
+            <input type="text" name="username" placeholder="Enter a username" class="form-control" required>
+        </div>
+        <!-- <br> -->
+        <div>
+            <label for="password" class="col-form-label">Password</label>
+            <input type="password" name="password" placeholder="Enter a strong password" class="form-control" required>
+        </div>
+        <!-- <br> -->
+        <div>
+            <label for="confirm-password" class="col-form-label">Confirm Password</label>
+            <input type="password" name="confirm-password" placeholder="Confirm the entered password" class="form-control" required>
+        </div>
+        <!-- <br> -->
+        <div>
+            <label for="name" class="col-form-label">Name</label>
+            <input type="text" name="name" placeholder="Enter your name" class="form-control">
+        </div>
+        <!-- <br> -->
+        <div>
+            <label for="stream" class="col-form-label">Stream</label>
+            <input type="text" name="stream" placeholder="Enter your stream of course" class="form-control">
+        </div>
+
+        <div class="col-12 d-flex justify-content-center">
+            <button type="submit" class="btn btn-success me-5">SIGN UP</button>
+        </div>
+    </form>
+{% endblock %}
