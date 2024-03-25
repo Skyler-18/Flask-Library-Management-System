@@ -7,7 +7,7 @@ db = SQLAlchemy(app)
 
 class User(db.Model):
     user_id = db.Column(db.Integer, primary_key=True)
-    user_name = db.Column(db.String(32), unique=True)
+    user_name = db.Column(db.String(32), unique=True, nullable=False)
     pass_hash = db.Column(db.String(256), nullable=False)
     name = db.Column(db.String(50))
     stream = db.Column(db.String(50))
