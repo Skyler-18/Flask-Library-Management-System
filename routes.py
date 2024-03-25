@@ -19,4 +19,4 @@ def admin_login():
 
 @app.route('/navbar')
 def navbar():
-    return render_template('navbar.html')
+    return render_template('navbar.html') 

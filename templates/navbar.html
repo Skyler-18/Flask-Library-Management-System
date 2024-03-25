@@ -1,70 +1,38 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+<h1 class="logo">Apni Library</h1>
 
-    <style>
-        *{
-            margin: 0;
-            padding: 0;
-        }
-
-        body{
-            margin: 0;
-            padding: 0;
-        }
-
-        .custom-navbar {
-            height: 5rem;
-            display: flex;
-            align-items: center;
-            font-size: 2rem;
-          }
-          
-          .logo {
-            color: purple;
-            font-family: "Permanent Marker", cursive;
-            font-weight: 300;
-            font-size: 5rem;
-            background-color: #FCF54D;
-          }
-          
-          /* Ensure the logo scales nicely on smaller screens */
-          @media (max-width: 768px) {
-            .logo {
-              font-size: 3rem; /* Adjust the size as needed */
-            }
-          }
-          
-    </style>
-</head>
-<body>
-    <nav class="navbar navbar-expand-lg custom-navbar">
-        <div class="container-fluid">
-          <div class="row w-100">
-            <div class="col-3 d-flex align-items-center">
-              <!-- Navbar content -->
-              <ul class="navbar-nav">
-                <li class="nav-item">
-                  <a class="nav-link active" aria-current="page" href="#">Register</a>
-                </li>
-                <li class="nav-item">
-                  <a class="nav-link" href="#">Login</a>
-                </li>
-              </ul>
-            </div>
-            <div class="col-6 d-flex justify-content-center">
-              <!-- Logo content -->
-              <a class="navbar-brand" href="#"><h1 class="logo">Apni Library</h1></a>
-            </div>
-            <div class="col-3">
-              <!-- Optional right-side content -->
-            </div>
-          </div>
-        </div>
-      </nav>
-      
-</body>
-</html>
+<nav class="navbar navbar-expand-lg navbar-transparent navbar-custom">
+  <div class="container-fluid">
+    <!-- <a class="navbar-brand" href="#">Navbar</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button> -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item">
+          <a class="nav-link active" aria-current="page" href="{{ url_for('register') }}">Register</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{{ url_for('user_login') }}">Login</a>
+        </li>
+        <!-- <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            Dropdown
+          </a>
+          <ul class="dropdown-menu">
+            <li><a class="dropdown-item" href="#">Action</a></li>
+            <li><a class="dropdown-item" href="#">Another action</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item" href="#">Something else here</a></li>
+          </ul>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link disabled" aria-disabled="true">Disabled</a>
+        </li> -->
+      </ul>
+      <!-- <form class="d-flex" role="search">
+        <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+        <button class="btn btn-outline-success" type="submit">Search</button>
+      </form> -->
+    </div>
+  </div>
+</nav>
