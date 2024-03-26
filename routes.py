@@ -1,11 +1,25 @@
-from flask import render_template, request, redirect, url_for, flash
+from flask import render_template, request, redirect, url_for, flash, session
 from app import app
 from models import db, User
 from werkzeug.security import generate_password_hash, check_password_hash
+from functools import wraps
+
+def authentication(func):
+    @wraps(func)
+    def check(*args, **kwargs):
+        if 'user_id' in session:
+            return func(*args, **kwargs)
+        else:
+            flash("Please login to continue")
+            return redirect(url_for('login'))
+    return check
 
 @app.route('/index')
+@authentication
 def index():
-    return "Yet to come"
+    # Checking if user_id is present in cookies i.e. whether user has an account or not
+    # Checking is done with authentication decorator
+    return "Yet to come"        
 
 @app.route('/register')
 def register():
@@ -65,4 +79,12 @@ def login_post():
         flash("Incorrect Password")
         return redirect(url_for('login'))
 
+    session['user_id'] = user.user_id
+    flash('Login Successful')
     return redirect(url_for('index'))
+
+@app.route('/profile')
+@authentication
+def profile():
+    user = User.query.get(session['user_id'])
+    return render_template('profile.html', user=user)

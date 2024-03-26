@@ -1,7 +1,9 @@
 from app import app
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy.sql import func
-from sqlalchemy import DateTime
+# from sqlalchemy.sql import func
+# from sqlalchemy import DateTime
+from werkzeug.security import generate_password_hash
+
 
 db = SQLAlchemy(app)
 
@@ -51,3 +53,11 @@ class Approval(db.Model):
 
 with app.app_context():
     db.create_all()
+
+    # If admin is not there, it will create the admin
+    admin = User.query.filter_by(is_admin=True).first()
+    if not admin:
+        password_hash = generate_password_hash('Admin')
+        admin = User(user_name='Admin', pass_hash=password_hash, name='Admin', is_admin=True)
+        db.session.add(admin)
+        db.session.commit()
