@@ -18,9 +18,9 @@ class User(db.Model):
 
 class Section(db.Model):
     section_id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(50), unique=True)
-    description = db.Column(db.String(500))
-    date_created = db.Column(db.Date, nullable=False)
+    title = db.Column(db.String(10), unique=True, nullable=False)
+    description = db.Column(db.String(100))
+    date_created = db.Column(db.String, nullable=False)
 
     books = db.relationship('Book', backref='section', lazy=True) #This creates a relationship between the two tables itself using the section_id which is the foreign key in Book. Now, we don't have to give specific SQL query to select all the books from Book table where section_id in both tables is matching.
     #backref helps in getting the name of section of the book. If we try to get section.books, we will get all the books in the section and when we try to get book.section we will get complete section object in that case too.
