@@ -1,7 +1,7 @@
 {% extends 'layout.html' %}
 
 {% block title %}
-    Add Section
+    Add Book
 {% endblock %}
 
 {% block style %}
@@ -67,27 +67,39 @@
 {% endblock %}
 
 {% block body %}
-
-<form class="form" method="post">
-    <h1>Add Section</h1>
+<form class="form" method="post" enctype="multipart/form-data">
+    <h1 class="heading">Add Book To "{{section.title}}" Section</h1>
 
     <div>
         <label for="title" class="col-form-label">Title</label>
-        <input type="text" name="title" placeholder="Enter title for category" class="form-control" required>
+        <input type="text" name="title" placeholder="Enter title of the book" class="form-control" required>
     </div>
 
     <div>
-        <label for="description" class="col-form-label">Description</label>
-        <input type="text" name="description" placeholder="Enter description for category" class="form-control">
+        <label for="author" class="col-form-label">Author/Authors</label>
+        <input type="text" name="author" placeholder="Enter authors of the book" class="form-control" required>
     </div>
 
     <div>
-        <label for="date" class="col-form-label">Date</label>
-        <input type="date" name="date" value="{{ current_date }}" placeholder="Date created" class="form-control" readonly>
+        <label for="image" class="col-form-label">Image Link</label>
+        <input type="url" name="image" placeholder="Link of cover page's image of the book" class="form-control">
     </div>
+
+    <div>
+        <label for="pages" class="col-form-label">Pages</label>
+        <input type="number" name="pages" placeholder="Enter number of pages of the book" class="form-control" required>
+    </div>
+
+    <div>
+        <label for="language" class="col-form-label">Language</label>
+        <input type="text" name="language" placeholder="Enter language of the book" class="form-control" required>
+    </div>
+
+    <label for="book_pdf" class="col-form-label">Book PDF</label>
+    <input type="file" name="book_pdf" placeholder="Upload pdf file of the book" class="form-control" required>
 
     <div class="col-12 d-flex justify-content-center">
-        <button type="submit" class="btn btn-success me-5">Add</button>
+        <button type="submit" class="btn btn-success me-5">Add Book</button>
     </div>
 </form>
 

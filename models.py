@@ -19,7 +19,7 @@ class User(db.Model):
 class Section(db.Model):
     section_id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(10), unique=True, nullable=False)
-    description = db.Column(db.String(100))
+    description = db.Column(db.String(200))
     date_created = db.Column(db.String, nullable=False)
 
     books = db.relationship('Book', backref='section', lazy=True) #This creates a relationship between the two tables itself using the section_id which is the foreign key in Book. Now, we don't have to give specific SQL query to select all the books from Book table where section_id in both tables is matching.
@@ -28,12 +28,13 @@ class Section(db.Model):
 
 class Book(db.Model):
     book_id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(64), unique=True, nullable=False)
-    author = db.Column(db.String(128), nullable=False)
+    title = db.Column(db.String, unique=True, nullable=False)
+    author = db.Column(db.String, nullable=False)
     section_id = db.Column(db.Integer, db.ForeignKey('section.section_id'), nullable=False)
-    content = db.Column(db.String(128))
-    image = db.Column(db.String(128))
-    rating = db.Column(db.String(128))
+    content = db.Column(db.String, nullable=False)
+    image = db.Column(db.String)
+    pages = db.Column(db.Integer, nullable=False)
+    language = db.Column(db.String, nullable=False)
     is_issued = db.Column(db.Boolean, nullable=False, default=False)
 
     # wlists = db.relationship('Waiting_list', backref='books', lazy=True)

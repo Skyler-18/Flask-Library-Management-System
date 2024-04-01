@@ -1,0 +1,176 @@
+{% extends 'layout.html' %}
+
+{% block title %}
+    Admin Page
+{% endblock %}
+
+{% block style %}
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Permanent+Marker&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Laila:wght@300;400;500;600;700&family=Permanent+Marker&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Laila:wght@300;400;500;600;700&family=Lusitana:wght@400;700&family=Permanent+Marker&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Tauri&display=swap');
+
+    *{
+        margin: 0;
+        padding: 0;
+    }
+    
+    body{
+        text-align: center;
+        background-color: #D2FFFC;
+        font-family: "Lusitana", serif;
+        margin-bottom: 1rem;
+    }
+
+    .logo{
+        color: purple;
+        font-family: "Permanent Marker", cursive;
+        font-weight: 300;
+        font-size: 4rem;
+        background-color: #FCF54D;
+        margin-bottom: 0;
+      }
+  
+      .heading{
+          font-family: "Laila", serif;
+          font-size: 2.2rem;
+          margin-bottom: 2rem;
+      }
+  
+      .nav-link{
+        font-size: 1.2rem;
+        font-family: "Tauri", sans-serif;
+        font-weight: 400;
+        font-style: normal;
+      }
+
+      .fa-solid{
+        color: green
+      }
+
+      .fa-solid:hover{
+        color: darkgreen;
+      }
+
+      .books{
+        margin-top: 3rem;
+      }
+
+      .book{
+        display: flex;
+        border: 3px solid black;
+        margin: 1rem 1rem 1rem 1rem;
+        border-radius: 2rem;
+        position: relative;
+      }
+
+      .img-container{
+        width: 25rem;
+        height: 20rem;
+        border: 0.5px solid black;
+        overflow: hidden;
+        margin: 1rem 1rem 1rem 1rem;
+        border-radius: 0.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .img-container img{
+        width: 100%;
+        height: auto;
+        max-width: 100%;
+        max-height: 100%;
+      }
+
+      .details{
+        margin-top: 1rem;
+        text-align: left;
+      }
+
+      .details .title{
+        font-weight: 700;
+      }
+
+      .details .author{
+        font-style: italic;
+        margin-bottom: 3rem;
+      }
+
+      .details .language{
+        margin-bottom: 6rem;
+      }
+
+      .details .controls{
+        position: absolute;
+        top: 0;
+        right: 0;
+        margin-top: 1rem;
+        margin-right: 1rem;
+      }
+
+      .details .fa-square-pen{
+        margin-right: 1rem;
+      }
+
+      .details .view{
+        border: 2px solid #000;
+        border-radius: 1rem;
+        background-color: #BAEE76;
+        font-size: 1.3rem;
+        transition: .3s;
+        padding: .5rem 1rem .5rem 1rem;
+        width: 10rem;
+        margin-right: 2rem;
+      }
+
+      .details .view:hover{
+        box-shadow: 6px 6px #8ec151;
+        transition: .3s;
+      }
+
+      .pages{
+        border: 2px solid #000;
+        border-radius: 50%;
+        padding: .5rem 1rem .5rem 1rem;
+        font-size: 2rem;
+        position: absolute;
+        right: 0;
+        bottom: 0;
+        margin: 0rem 2rem 1rem 2rem;
+      }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <h1 class="heading">Books In {{section.title}}</h1>
+    <a href="{{ url_for('add_book', section_id = section.section_id) }}">
+        <i class="fa-solid fa-circle-plus fa-4x"></i>
+    </a>
+
+    <div class="books">
+        {% for book in books %}
+
+        <div class="book">
+            <div class="img-container">
+                <img src="{{book.image}}" alt="{{ book.title }} Cover">
+            </div>
+            <div class="details">
+                <h1 class="title">{{book.title}}</h1>
+                <h2 class="author">{{book.author}}</h2>
+                <h4 class="language">Language: {{book.language}}</h4>
+
+            <div class="controls">
+                <a href=" {{url_for('edit_book', section_id=section.section_id, book_id=book.book_id) }}"> <i class="fa-solid fa-square-pen fa-2x"></i> </a>
+                <a href=" {{url_for('delete_book', section_id=section.section_id, book_id=book.book_id) }}"> <i class="fa-solid fa-trash fa-2x"></i> </a>
+            </div>
+
+                <a href="{{url_for('view_book', section_id=book.section.section_id, book_id=book.book_id)}}" target="_blank"> <button class="view">View Book</button> </a>                
+                <span class="pages">{{book.pages}}</span>
+            </div>
+        </div>
+
+        {% endfor %}
+    </div>
+{% endblock %}
