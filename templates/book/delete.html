@@ -1,4 +1,4 @@
-{% extends 'layout.html' %}
+{% extends 'lib_layout.html' %}
 
 {% block title %}
     Remove Book
@@ -68,9 +68,9 @@
 {% block body %}
 
 <form class="form" method="post">
-    <h1>Delete Book: "{{book.title}}" </h1>
+    <h1 class="heading">Delete Book: "{{book.title}}" </h1>
 
-    <h5>Are you sure you want to remove this book?</h5>
+    <h4>Are you sure you want to remove this book?</h4>
 
     <div class="col-12 d-flex justify-content-center">
         <button type="submit" class="btn btn-danger me-5">Remove</button>

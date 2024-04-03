@@ -1,4 +1,4 @@
-{% extends 'layout.html' %}
+{% extends 'lib_layout.html' %}
 
 {% block title %}
     Add Book
@@ -81,13 +81,13 @@
     </div>
 
     <div>
-        <label for="image" class="col-form-label">Image Link</label>
+        <label for="image" class="col-form-label">Image Link <i>(optional)</i> </label>
         <input type="url" name="image" placeholder="Link of cover page's image of the book" class="form-control">
     </div>
 
     <div>
         <label for="pages" class="col-form-label">Pages</label>
-        <input type="number" name="pages" placeholder="Enter number of pages of the book" class="form-control" required>
+        <input type="number" name="pages" min="1" placeholder="Enter number of pages of the book" class="form-control" required>
     </div>
 
     <div>

@@ -1,4 +1,4 @@
-{% extends 'layout.html' %}
+{% extends 'lib_layout.html' %}
 
 {% block title %}
     Edit Section
@@ -69,7 +69,7 @@
 {% block body %}
 
 <form class="form" method="post">
-    <h1>Edit Section: "{{section.title}}" </h1>
+    <h1 class="heading">Edit Section: "{{section.title}}" </h1>
 
     <div>
         <label for="title" class="col-form-label">Title</label>
@@ -77,13 +77,13 @@
     </div>
 
     <div>
-        <label for="description" class="col-form-label">Description</label>
+        <label for="description" class="col-form-label">Description <i>(optional)</i> </label>
         <input type="text" name="description" placeholder="Enter description for category" value="{{section.description}}" class="form-control">
     </div>
 
     <div>
         <label for="date" class="col-form-label">Date</label>
-        <input type="date" name="date" placeholder="Date created" value="{{section.date_created}}" class="form-control" readonly>
+        <input type="date" name="date" placeholder="Date created" value="{{section.date_created}}" class="form-control">
     </div>
 
     <div class="col-12 d-flex justify-content-center">

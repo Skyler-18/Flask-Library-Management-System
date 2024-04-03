@@ -1,0 +1,181 @@
+{% extends 'student/student_layout.html' %}
+
+{% block title %}
+    Admin Page
+{% endblock %}
+
+{% block style %}
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Permanent+Marker&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Laila:wght@300;400;500;600;700&family=Permanent+Marker&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Laila:wght@300;400;500;600;700&family=Lusitana:wght@400;700&family=Permanent+Marker&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Tauri&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+
+    *{
+        margin: 0;
+        padding: 0;
+    }
+    
+    body{
+        text-align: center;
+        background-color: #D2FFFC;
+        font-family: "Lusitana", serif;
+        margin-bottom: 1rem;
+    }
+
+    .logo{
+        color: purple;
+        font-family: "Permanent Marker", cursive;
+        font-weight: 300;
+        font-size: 4rem;
+        background-color: #FCF54D;
+        margin-bottom: 0;
+      }
+  
+      .heading{
+          font-family: "Laila", serif;
+          font-size: 2.2rem;
+          margin-bottom: 4rem;
+      }
+  
+      .nav-link{
+        font-size: 1.2rem;
+        font-family: "Tauri", sans-serif;
+        font-weight: 400;
+        font-style: normal;
+      }
+
+      .fa-solid{
+        color: green
+      }
+
+      .fa-solid:hover{
+        color: darkgreen;
+      }
+
+      .section-header{
+        text-align: left;
+        margin-left: 2rem;
+        margin-top: 2rem;
+      }
+
+      .content{
+        font-family: "Montserrat", sans-serif;
+      }
+
+      .section{
+        display: flex;
+        overflow-x: auto;
+        white-space: nowrap;
+        scroll-behavior: smooth;
+        margin: 0rem 2rem 0rem 2rem;
+      }
+
+      .cover{
+        display: flex;
+        flex-direction: column;
+      }
+
+      .book{
+        border: 1px solid black;
+        width: 18rem;
+        height: 25rem;
+        flex: 0 0 auto;
+        margin-right: 10px;
+        padding: 10px;
+        white-space: normal;
+        position: relative;
+        color: rgb(255, 255, 255, 1);
+        overflow: hidden;
+      }
+
+      .book .title{
+        font-weight: bold;
+        z-index: 1;
+      }
+
+      .book .author{
+        font-style: italic;
+        z-index: 1;
+        text-align: left;
+        font-weight: 400;
+      }
+
+      .book .language{
+        z-index: 1;
+        text-align: left;
+      }
+
+      .book .pages{
+        z-index: 1;
+        text-align: left;
+      }
+
+      .book .issues{
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        margin-right: .5rem;
+      }
+
+      .book::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.6); /* Semi-transparent white background */
+        z-index: -1;
+      }
+      
+      .background-image {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -2;
+      }
+
+      .btn-info{
+        margin-right: 10px;
+        width: 18rem;
+        border-top-left-radius: 0;
+        border-top-right-radius: 0;
+        font-size: 1.5rem;
+      }
+
+      .btn-info:hover{
+        background-color: #0e90ab;
+      }
+    </style>
+{% endblock %}
+
+{% block body %}
+  <h1 class="heading">Find Books Here</h1>
+
+  <div class="content">
+    {% for section in sections %}
+
+      <h1 class="section-header">{{section.title}}</h1>
+      <div class="section">
+        {% for book in section.books %}
+        <div class="cover">
+          <div class="book">
+            <h2 class="title">{{book.title}}</h2>
+            <h3 class="author">{{book.author}}</h3>
+            <h5 class="language">Language: {{book.language}}</h5>
+            <h5 class="pages">Pages: {{book.pages}}</h5>
+            <h5 class="issues">{{book.issue_num}} issues yet</h5>
+            <div class="background-image" style="background-image: url('{{book.image}}'); filter: blur(6px);"></div>
+          </div>
+          <a href="{{url_for('student_request_book', book_id=book.book_id)}}"> <button type="button" class="btn btn-info">REQUEST</button> </a>
+        </div>
+        {% endfor %}
+      </div>
+
+      {% endfor %}
+  </div>
+{% endblock %}

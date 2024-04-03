@@ -1,4 +1,4 @@
-{% extends 'layout.html' %}
+{% extends 'lib_layout.html' %}
 
 {% block title %}
     Admin Page
@@ -68,8 +68,8 @@
       }
 
       .img-container{
-        width: 20rem;
-        height: 18rem;
+        width: 18rem;
+        height: 22rem;
         border: 0.5px solid black;
         overflow: hidden;
         margin: 1rem 1rem 1rem 1rem;
@@ -98,11 +98,13 @@
 
       .details .author{
         font-style: italic;
-        margin-bottom: 3rem;
+        margin-bottom: 5rem;
       }
 
       .details .language{
-        margin-bottom: 4rem;
+        position: absolute;
+        bottom: 0;
+        margin-bottom: 9rem;
       }
 
       .details .controls{
@@ -126,6 +128,9 @@
         padding: .5rem 1rem .5rem 1rem;
         width: 10rem;
         margin-right: 2rem;
+        position: absolute;
+        bottom: 0;
+        margin-bottom: 2rem;
       }
 
       .details .view:hover{
@@ -136,12 +141,14 @@
       .pages{
         border: 2px solid #000;
         border-radius: 50%;
-        padding: .5rem 1rem .5rem 1rem;
+        padding: 1rem 2rem 1rem 2rem;
         font-size: 2rem;
         position: absolute;
         right: 0;
         bottom: 0;
         margin: 0rem 2rem 1rem 2rem;
+        text-align: center;
+        width: 10rem;
       }
     </style>
 {% endblock %}
@@ -170,7 +177,7 @@
             </div>
 
                 <a href="{{url_for('view_book', section_id=book.section.section_id, book_id=book.book_id)}}" target="_blank"> <button class="view">View Book</button> </a>                
-                <span class="pages">{{book.pages}}</span>
+                <span class="pages">{{book.pages}} <br> <h5>pages</h5></span>
             </div>
         </div>
 

@@ -1,4 +1,4 @@
-{% extends 'layout.html' %}
+{% extends 'lib_layout.html' %}
 
 {% block title %}
     Delete Section
@@ -68,9 +68,10 @@
 {% block body %}
 
 <form class="form" method="post">
-    <h1>Delete Section: "{{section.title}}" </h1>
+    <h1 class="heading">Delete Section: "{{section.title}}" </h1>
 
-    <h5>Are you sure you want to delete this section?</h5>
+    <h4>Are you sure you want to delete this section?</h4>
+    <h5>This will delete all the books in this section.</h5>
 
     <div class="col-12 d-flex justify-content-center">
         <button type="submit" class="btn btn-danger me-5">Delete</button>

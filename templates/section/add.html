@@ -1,4 +1,4 @@
-{% extends 'layout.html' %}
+{% extends 'lib_layout.html' %}
 
 {% block title %}
     Add Section
@@ -77,13 +77,13 @@
     </div>
 
     <div>
-        <label for="description" class="col-form-label">Description</label>
+        <label for="description" class="col-form-label">Description <i>(optional)</i> </label>
         <input type="text" name="description" placeholder="Enter description for category" class="form-control">
     </div>
 
     <div>
         <label for="date" class="col-form-label">Date</label>
-        <input type="date" name="date" value="{{ current_date }}" placeholder="Date created" class="form-control" readonly>
+        <input type="date" name="date" placeholder="Date created" value="{{current_date}}" class="form-control">
     </div>
 
     <div class="col-12 d-flex justify-content-center">
