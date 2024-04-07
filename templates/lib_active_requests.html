@@ -1,0 +1,102 @@
+{% extends 'lib_layout.html' %}
+
+{% block title %}
+    Admin Page
+{% endblock %}
+
+{% block style %}
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Permanent+Marker&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Laila:wght@300;400;500;600;700&family=Permanent+Marker&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Laila:wght@300;400;500;600;700&family=Lusitana:wght@400;700&family=Permanent+Marker&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Tauri&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+
+    *{
+        margin: 0;
+        padding: 0;
+    }
+    
+    body{
+        text-align: center;
+        background-color: #D2FFFC;
+        font-family: "Lusitana", serif;
+        margin-bottom: 1rem;
+    }
+
+    .logo{
+        color: purple;
+        font-family: "Permanent Marker", cursive;
+        font-weight: 300;
+        font-size: 4rem;
+        background-color: #FCF54D;
+        margin-bottom: 0;
+      }
+  
+      .heading{
+          font-family: "Laila", serif;
+          font-size: 2.2rem;
+          margin-bottom: 4rem;
+      }
+  
+      .nav-link{
+        font-size: 1.2rem;
+        font-family: "Tauri", sans-serif;
+        font-weight: 400;
+        font-style: normal;
+      }
+
+      .table{
+        margin-left: 5rem;
+        margin-right: 6rem;
+        max-width: calc(100% - 10rem);
+        font-family: "Montserrat", sans-serif;
+        font-size: 1.5rem;
+      }
+    </style>
+{% endblock %}
+
+{% block body %}
+  <h1 class="heading">Active Requests</h1>
+  
+  <div class="container">
+    <div class="row">
+      <div class="col">
+
+  <table class="table table-bordered table-striped">
+    <thead class="table-dark">
+        <tr>
+            <th scope="col">S.No.</th>
+            <th scope="col">User</th>
+            <th scope="col">Book Name</th>
+            <th scope="col"></th> <!-- New column without heading -->
+        </tr>
+    </thead>
+    <tbody>
+        {% for i in range(books|length) %}
+            <tr>
+                <td>{{ i+1 }}</td>
+                <td>
+                    {{users[i]}}
+                </td>
+                <td>
+                    {{books[i]}}
+                </td>
+                <td>
+                    <form action="{{url_for('grant_book', username=users[i], title=books[i])}}">
+                        <button type="submit" class="btn btn-success">Grant Book</button> 
+                    </form>
+                    
+                    <form action="{{url_for('reject_request', username=users[i], title=books[i])}}">
+                        <button type="submit" class="btn btn-danger">Cancel Request</button> 
+                    </form>
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+</div>
+</div>
+</div>
+
+{% endblock %}

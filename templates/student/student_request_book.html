@@ -1,4 +1,4 @@
-{% extends 'lib_layout.html' %}
+{% extends 'student/student_layout.html' %}
 
 {% block title %}
     Admin Page
@@ -10,6 +10,7 @@
     @import url('https://fonts.googleapis.com/css2?family=Laila:wght@300;400;500;600;700&family=Permanent+Marker&display=swap');
     @import url('https://fonts.googleapis.com/css2?family=Laila:wght@300;400;500;600;700&family=Lusitana:wght@400;700&family=Permanent+Marker&display=swap');
     @import url('https://fonts.googleapis.com/css2?family=Tauri&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
 
     *{
         margin: 0;
@@ -35,7 +36,7 @@
       .heading{
           font-family: "Laila", serif;
           font-size: 2.2rem;
-          margin-bottom: 2rem;
+          margin-bottom: 4rem;
       }
   
       .nav-link{
@@ -45,27 +46,17 @@
         font-style: normal;
       }
 
-      .fa-solid{
-        color: green
-      }
-
-      .fa-solid:hover{
-        color: darkgreen;
-      }
-
-      .books{
-        margin-top: 3rem;
-        margin-right: 3rem;
-        margin-left: 3rem;
-        font-family: "Montserrat", sans-serif;
+      .desc{
+        margin: 0 7rem 4rem 7rem;
       }
 
       .book{
         display: flex;
         border: 3px solid black;
-        margin: 1rem 1rem 1rem 1rem;
+        margin: 1rem 4rem 1rem 4rem;
         border-radius: 2rem;
         position: relative;
+        font-family: "Montserrat", sans-serif;
       }
 
       .img-container{
@@ -108,18 +99,6 @@
         margin-bottom: 9rem;
       }
 
-      .details .controls{
-        position: absolute;
-        top: 0;
-        right: 0;
-        margin-top: 1rem;
-        margin-right: 1rem;
-      }
-
-      .details .fa-square-pen{
-        margin-right: 1rem;
-      }
-
       .details .view{
         border: 2px solid #000;
         border-radius: 1rem;
@@ -155,33 +134,33 @@
 {% endblock %}
 
 {% block body %}
-    <h1 class="heading">Books In {{section.title}}</h1>
-    <a href="{{ url_for('add_book', section_id = section.section_id) }}">
-        <i class="fa-solid fa-circle-plus fa-4x"></i>
-    </a>
+  <h1 class="heading">Request Book: "{{book.title}}"</h1>
+  <h2>Are you sure you want to issue this book?</h2>
+  <h4 class="desc">If the request is accepted by the librarian, the book will be issued for 7 days. Though, librarian can revoke the book and you can also return the book, before 7 days are over. </h4>
 
-    <div class="books">
-        {% for book in books %}
+  <br>
+  {% if count>=5 %}
+    <h3 class="count_mssg">You have already issued or requested 5 books. You cannot request or issue more than that at a time.</h3>
+  {% endif %}
 
-        <div class="book">
-            <div class="img-container">
-                <img src="{{book.image}}" alt="{{ book.title }} Cover">
-            </div>
-            <div class="details">
-                <h1 class="title">{{book.title}}</h1>
-                <h2 class="author">{{book.author}}</h2>
-                <h4 class="language">Language: {{book.language}}</h4>
-
-            <div class="controls">
-                <a href=" {{url_for('edit_book', section_id=section.section_id, book_id=book.book_id) }}"> <i class="fa-solid fa-square-pen fa-2x"></i> </a>
-                <a href=" {{url_for('delete_book', section_id=section.section_id, book_id=book.book_id) }}"> <i class="fa-solid fa-trash fa-2x"></i> </a>
-            </div>
-
-                <a href="{{url_for('view_book', section_id=book.section.section_id, book_id=book.book_id)}}" target="_blank"> <button class="view">View Book</button> </a>                
-                <span class="pages">{{book.pages}} <br> <h5>pages</h5></span>
-            </div>
-        </div>
-
-        {% endfor %}
+  <div class="book">
+    <div class="img-container">
+        <img src="{{book.image}}" alt="{{ book.title }} Cover">
     </div>
+    <div class="details">
+        <h1 class="title">{{book.title}}</h1>
+        <h2 class="author">{{book.author}}</h2>
+        <h4 class="language">Language: {{book.language}}</h4>
+
+        {% if count<5 %}
+        <form action="{{ url_for('my_requests_post', book_id=book.book_id) }}" method="post">
+          <button type="submit" class="view">Confirm Request</button>
+        </form>
+        {% else %}
+          <button class="view" disabled>Confirm Request</button> 
+        {% endif %}
+
+        <span class="pages">{{book.pages}} <br> <h5>pages</h5></span>
+    </div>
+</div>
 {% endblock %}

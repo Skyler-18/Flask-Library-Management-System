@@ -1,0 +1,32 @@
+<div class="container-fluid mt-4">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <form class="row g-2 align-items-center">
+                <div class="col-md-4">
+                    <input type="text" class="form-control border" value="{{filter_section}}" name="section" placeholder="Section">
+                </div>
+                <div class="col-md-4">
+                    <input type="text" class="form-control border" value="{{filter_book}}" name="book" placeholder="Book">
+                </div>
+                <div class="col-md-4">
+                    <input type="text" class="form-control border" value="{{filter_author}}" name="author" placeholder="Author">
+                </div>
+                
+                <div class="col-md-4 mt-2">
+                    <input type="text" class="form-control border" value="{{filter_language}}" name="language" placeholder="Language">
+                </div>
+                <div class="col-md-4 mt-2">
+                    <input type="text" class="form-control border" value="{{filter_pages}}" name="pages" placeholder="Maximum Pages">
+                </div>
+                <div class="col-md-4 mt-2">
+                    <input type="text" class="form-control border" value="{{filter_issues}}" name="issues" placeholder="Minimum Issues">
+                </div>
+
+                <div class="col-md-12 mt-2">
+                    <button class="btn btn-outline-primary btn-block" type="submit" style="font-size: 1.5rem;"><i class="fa-solid fa-filter"></i> Filter</button>
+                    <a href="{{url_for('student_books')}}" class="btn btn-outline-danger btn-block" style="font-size: 1.5rem;"><i class="fa-solid fa-xmark"></i> Clear</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

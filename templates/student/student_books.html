@@ -46,14 +46,6 @@
         font-style: normal;
       }
 
-      .fa-solid{
-        color: green
-      }
-
-      .fa-solid:hover{
-        color: darkgreen;
-      }
-
       .section-header{
         text-align: left;
         margin-left: 2rem;
@@ -139,7 +131,7 @@
         z-index: -2;
       }
 
-      .btn-info{
+      .btn-secondary, .btn-info{
         margin-right: 10px;
         width: 18rem;
         border-top-left-radius: 0;
@@ -157,22 +149,44 @@
   <h1 class="heading">Find Books Here</h1>
 
   <div class="content">
-    {% for section in sections %}
+    {% include 'student/filter.html' %}
 
+    {% for section in sections %}
       <h1 class="section-header">{{section.title}}</h1>
       <div class="section">
         {% for book in section.books %}
-        <div class="cover">
-          <div class="book">
-            <h2 class="title">{{book.title}}</h2>
-            <h3 class="author">{{book.author}}</h3>
-            <h5 class="language">Language: {{book.language}}</h5>
-            <h5 class="pages">Pages: {{book.pages}}</h5>
-            <h5 class="issues">{{book.issue_num}} issues yet</h5>
-            <div class="background-image" style="background-image: url('{{book.image}}'); filter: blur(6px);"></div>
-          </div>
-          <a href="{{url_for('student_request_book', book_id=book.book_id)}}"> <button type="button" class="btn btn-info">REQUEST</button> </a>
-        </div>
+
+
+        {% if (filter_book!="" and filter_book.lower() in book.title.lower()) or (not filter_book) %}
+        {% if (filter_author!="" and filter_author.lower() in book.author.lower()) or (not filter_author) %}
+        {% if (filter_language!="" and filter_language.lower() in book.language.lower()) or (not filter_language) %}
+        {% if (filter_pages and book.pages<=filter_pages) or (not filter_pages) %}
+        {% if (filter_issues and filter_issues<=book.issue_num) or (not filter_issues) %}
+            <div class="cover">
+              <div class="book">
+                <h2 class="title">{{book.title}}</h2>
+                <h3 class="author">{{book.author}}</h3>
+                <h5 class="language">Language: {{book.language}}</h5>
+                <h5 class="pages">Pages: {{book.pages}}</h5>
+                <h5 class="issues">{{book.issue_num}} issues yet</h5>
+                <div class="background-image" style="background-image: url('{{book.image}}'); filter: blur(6px);"></div>
+              </div>
+
+              {% if book.book_id in books %}
+                <button type="button" class="btn btn-secondary" disabled>REQUESTED</button>
+              {% elif book.book_id in books_issued %}
+                <button type="button" class="btn btn-secondary" disabled>ISSUED</button>
+              {% else %}
+                <a href="{{url_for('student_request_book', book_id=book.book_id)}}"> <button type="button" class="btn btn-info">OPEN</button> </a>
+              {% endif %}
+            </div>
+
+        {% endif %}
+        {% endif %}
+        {% endif %}
+        {% endif %}
+        {% endif %}
+
         {% endfor %}
       </div>
 

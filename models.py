@@ -34,17 +34,37 @@ class Book(db.Model):
     language = db.Column(db.String, nullable=False)
     issue_num = db.Column(db.Integer, nullable=False, default=0)
 
-class Requests(db.Model):
-    request_id = db.Column(db.Integer, primary_key=True)
+class Requests_Active(db.Model):
+    ra_id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.user_id'), nullable=False)
     book_id = db.Column(db.Integer, db.ForeignKey('book.book_id'), nullable=False)
-    is_issued = db.Column(db.Boolean, nullable=True)
-    is_returned = db.Column(db.Boolean, nullable=True)
-    issue_date = db.Column(db.Date)
-    return_date = db.Column(db.Date)
 
-    req_users = db.relationship('User', backref='requests', lazy=True)
-    req_books = db.relationship('Book', backref='books', lazy=True)
+    requested_books = db.relationship('Book', backref='requests_active', lazy=True)
+
+class Issues_Active(db.Model):
+    ia_id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.user_id'), nullable=False)
+    book_id = db.Column(db.Integer, db.ForeignKey('book.book_id'), nullable=False)
+    issue_date = db.Column(db.Date, nullable=False)
+    end_date = db.Column(db.Date, nullable=False)
+
+class Requests_Rejected(db.Model):
+    rr_id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.user_id'), nullable=False)
+    book_id = db.Column(db.Integer, db.ForeignKey('book.book_id'), nullable=False)
+    date_rejected = db.Column(db.Date, nullable=False)
+
+    #         <!-- {% if (criteria=='book' and search.lower() in book.title.lower()) or (criteria=='language' and search.lower() in book.language.lower()) or (criteria=='pages' and book.pages<=search) or (criteria=='issues' and book.issue_num<=search) or (not criteria)%} -->
+
+class Issues_Expired(db.Model):
+    ie_id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.user_id'), nullable=False)
+    book_id = db.Column(db.Integer, db.ForeignKey('book.book_id'), nullable=False)
+    issue_date = db.Column(db.Date, nullable=False)
+    returned_date = db.Column(db.Date, nullable=False)
+    cause = db.Column(db.String, nullable=False)
+
+    __table_args__ = (db.CheckConstraint(cause.in_(['Librarian', 'Student', 'Automatically']), name='check_cause_values'),)
 
 with app.app_context():
     db.create_all()

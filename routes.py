@@ -1,9 +1,9 @@
 from flask import render_template, request, redirect, url_for, flash, session, make_response
 from app import app
-from models import db, User, Section, Book
+from models import db, User, Section, Book, Requests_Active, Issues_Active, Requests_Rejected, Issues_Expired
 from werkzeug.security import generate_password_hash, check_password_hash
 from functools import wraps
-from datetime import datetime
+from datetime import datetime, timedelta
 import os
 
 
@@ -223,6 +223,12 @@ def delete_section_post(section_id):
     db.session.delete(section)
     db.session.commit()
 
+    for book in section.books:
+        books_folder = "book_pdfs/"
+        book_path = os.path.join(books_folder, book.content)
+        if os.path.exists(book_path):
+            os.remove(book_path)
+
     flash('Section Deleted Successfully')
     return redirect(url_for('lib_sections'))
 
@@ -298,7 +304,9 @@ def add_book_post(section_id):
             return redirect(url_for('add_book', section_id=section_id))
     
     book_id = len(Book.query.all()) + 1
-    final_filename = f"Book_{book_id}.pdf"
+    final_filename = f"Book_{book_id}_{title}.pdf"
+    if not os.path.exists('book_pdfs'):
+        os.makedirs('book_pdfs')
     book_pdf.save(os.path.join('book_pdfs', final_filename))
     
     book = Book(title=title, author=author, pages=pages, image=image, language=language, content=final_filename, section=section)
@@ -388,7 +396,6 @@ def edit_book_post(section_id, book_id):
     
     book_title = Book.query.filter_by(title=title).first()
     if title != book.title:
-        book_title = Book.query.filter_by(title=title).first()
         if book_title:
             flash('This Book Already Exists')
             return redirect(url_for('edit_book', section_id=section_id, book_id=book_id))
@@ -403,7 +410,7 @@ def edit_book_post(section_id, book_id):
             flash('Book Should Contain A Minimum Of 1 Page')
             return redirect(url_for('edit_book', section_id=section_id, book_id=book_id))
     
-    book_filename = f"Book_{book_id}.pdf"
+    book_filename = f"Book_{book_id}_{title}.pdf"
     book_pdf.save(os.path.join('book_pdfs', book_filename))
     
     book.title = title
@@ -456,6 +463,61 @@ def delete_book_post(section_id, book_id):
 
     flash('Book Removed Successfully')
     return redirect(url_for('open_section', section_id=section_id))
+
+
+@app.route('/librarian/active-requests')
+@lib_check
+def active_requests():
+    entries = Requests_Active.query.all()
+    books = list()
+    users = list()
+    for entry in entries:
+        book = Book.query.filter_by(book_id=entry.book_id).first()
+        books.append(book.title)
+        user = User.query.filter_by(user_id=entry.user_id).first()
+        users.append(user.user_name)
+    return render_template('lib_active_requests.html', books=books, users=users)
+
+@app.route('/librarian/grant-book/<string:username>/<string:title>')
+@lib_check
+def grant_book(username, title):
+    user = User.query.filter_by(user_name=username).first()
+    book = Book.query.filter_by(title=title).first()
+    curr_date = datetime.now().date()
+    # formatted_curr_date = curr_date.strftime("%Y-%m-%d")
+    return_date = curr_date + timedelta(days=7)
+    # formatted_return_date = return_date.strftime("%Y-%m-%d")
+    issue = Issues_Active(user_id=user.user_id, book_id=book.book_id, issue_date=curr_date, end_date=return_date)
+
+    user.books_issued = user.books_issued + 1
+    book.issue_num = book.issue_num + 1
+    db.session.add(issue)
+    # db.session.commit()
+
+    entry = Requests_Active.query.filter_by(user_id=user.user_id, book_id=book.book_id).first()
+    db.session.delete(entry)
+    db.session.commit()
+
+    flash('Book Granted Successfully')
+    return redirect(url_for('active_requests'))
+
+@app.route('/librarian/reject-request/<string:username>/<string:title>')
+@lib_check
+def reject_request(username, title):
+    user = User.query.filter_by(user_name=username).first()
+    book = Book.query.filter_by(title=title).first()
+    curr_date = datetime.now().date()
+    # formatted_curr_date = curr_date.strftime("%Y-%m-%d")
+    request = Requests_Rejected(user_id=user.user_id, book_id=book.book_id, date_rejected=curr_date)
+    db.session.add(request)
+    # db.session.commit()
+
+    entry = Requests_Active.query.filter_by(user_id=user.user_id, book_id=book.book_id).first()
+    db.session.delete(entry)
+    db.session.commit()
+
+    flash('Book Request Rejected')
+    return redirect(url_for('active_requests'))
 
 
 
@@ -552,14 +614,137 @@ def student_profile():
 @authentication
 def student_books():
     sections = Section.query.all()
-    return render_template('student/student_books.html', sections=sections)
+    user = User.query.get(session['user_id'])
+    user_books = Requests_Active.query.filter_by(user_id=user.user_id).all()
+    books = list()
+    for user_book in user_books:
+        books.append(user_book.book_id)
+
+    issues = Issues_Active.query.filter_by(user_id=user.user_id).all()
+    books_issued = list()
+    for issue in issues:
+        books_issued.append(issue.book_id)
+
+    filter_section = request.args.get('section') or ""
+    filter_book = request.args.get('book') or ""
+    filter_author = request.args.get('author') or ""
+    filter_language = request.args.get('language') or ""
+    filter_pages = request.args.get('pages') or ""
+    filter_issues = request.args.get('issues') or ""
+
+    if filter_section:
+        sections = Section.query.filter(Section.title.ilike(f'%{filter_section}%')).all()
+
+    if filter_pages:
+        try:
+            filter_pages = int(filter_pages)
+        except ValueError:
+            flash('Enter Valid Number Of Pages')
+            return redirect(url_for('student_books'))
+        if filter_pages <= 0:
+            flash('Enter Valid Number Of Pages')
+            return redirect(url_for('student_books'))
+    
+    if filter_issues:
+        try:
+            filter_issues = int(filter_issues)
+        except ValueError:
+            flash('Enter Valid Number Of Issues')
+            return redirect(url_for('student_books'))
+        if filter_issues < 0:
+            flash('Enter Valid Number Of Issues')
+            return redirect(url_for('student_books'))
+
+    return render_template('student/student_books.html', sections=sections, books=books, books_issued=books_issued, filter_section=filter_section, filter_book=filter_book, filter_author=filter_author, filter_language=filter_language, filter_pages=filter_pages, filter_issues=filter_issues)
 
 @app.route('/student/books/request/<int:book_id>')
 @authentication
 def student_request_book(book_id):
     book = Book.query.get(book_id)
     if not book:
-        sections = Section.query.all()
         flash('Book Does Not Exist')
-        return render_template('student/student_books.html', sections=sections)
-    return "Coming soon"
+        return redirect(url_for('student_books'))
+    user = User.query.get(session['user_id'])
+    requested_books = Requests_Active.query.filter_by(user_id=user.user_id).all()
+    issued_books = Issues_Active.query.filter_by(user_id=user.user_id).all()
+    count = len(requested_books) + len(issued_books)
+    return render_template('student/student_request_book.html', book=book, count=count)
+
+@app.route('/student/my-requests')
+@authentication
+def my_requests():
+    user = User.query.get(session['user_id'])
+    entries = Requests_Active.query.filter_by(user_id=user.user_id).all()
+    books = list()
+    for entry in entries:
+        book = Book.query.filter_by(book_id=entry.book_id).first()
+        books.append(book.title)
+
+    requests = Requests_Rejected.query.filter_by(user_id=user.user_id).order_by(Requests_Rejected.rr_id.desc()).limit(5).all()
+    rejects = list()
+    for request in requests:
+        book = Book.query.filter_by(book_id=request.book_id).first()
+        details = (book.title, request.date_rejected)
+        rejects.append(details)
+
+    return render_template('student/my_requests.html', books=books, rejects=rejects)
+
+@app.route('/student/my-requests/add/<int:book_id>', methods=['POST'])
+@authentication
+def my_requests_post(book_id):
+    user = User.query.get(session['user_id'])
+    book = Book.query.filter_by(book_id=book_id).first()
+
+    new_entry = Requests_Active(user_id=user.user_id, book_id=book.book_id)
+    db.session.add(new_entry)
+    db.session.commit()
+
+    flash('Book Requested Successfully')
+    return redirect(url_for('my_requests'))
+
+@app.route('/student/cancel-request/<string:title>')
+@authentication
+def cancel_request(title):
+    book = Book.query.filter_by(title=title).first()
+    if not book:
+        flash('Book Does Not Exist')
+        return redirect(url_for('student_books'))
+    return render_template('student/cancel_request.html', title=title)
+
+@app.route('/student/cancel-request/<string:title>', methods=['POST'])
+@authentication
+def cancel_request_post(title):
+    book = Book.query.filter_by(title=title).first()
+    if not book:
+        flash('Book Does Not Exist')
+        return redirect(url_for('student_books'))
+    entry = Requests_Active.query.filter_by(book_id=book.book_id).first()
+    db.session.delete(entry)
+    db.session.commit()
+
+    flash('Book Request Cancelled Successfully')
+    return redirect(url_for('my_requests'))
+
+@app.route('/student/my-books')
+@authentication
+def my_books():
+    user = User.query.get(session['user_id'])
+    issues = Issues_Active.query.filter_by(user_id=user.user_id).all()
+    books = list()
+    for issue in issues:
+        book = Book.query.filter_by(book_id=issue.book_id).first()
+        books.append(book.title)
+
+    return render_template('student/my_books.html', books=books)
+
+@app.route('/student/read/<string:title>')
+@authentication
+def read_book(title):
+    book = Book.query.filter_by(title=title).first()
+    book_path = "book_pdfs/" + book.content
+
+    book = make_response(open(book_path, 'rb').read())
+    book.headers['Content-Type'] = 'application/pdf'
+    book.headers['Content-Disposition'] = 'inline; filename=book.pdf'
+
+    return book
