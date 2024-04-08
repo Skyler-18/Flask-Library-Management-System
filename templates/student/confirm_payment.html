@@ -1,0 +1,107 @@
+{% extends 'student/student_layout.html' %}
+
+{% block title %}
+    Profile Page
+{% endblock %}
+
+{% block style %}
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Permanent+Marker&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Laila:wght@300;400;500;600;700&family=Permanent+Marker&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Laila:wght@300;400;500;600;700&family=Lusitana:wght@400;700&family=Permanent+Marker&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Tauri&display=swap');
+
+    *{
+        margin: 0;
+        padding: 0;
+    }
+    
+    body{
+        text-align: center;
+        background-color: #D2FFFC;
+        font-family: "Lusitana", serif;
+        margin-bottom: 1rem;
+    }
+
+    .logo{
+        color: purple;
+        font-family: "Permanent Marker", cursive;
+        font-weight: 300;
+        font-size: 4rem;
+        background-color: #FCF54D;
+        margin-bottom: 0;
+      }
+  
+      .heading{
+          font-family: "Laila", serif;
+          font-size: 4rem;
+          margin-bottom: 2rem;
+      }
+  
+      .nav-link{
+        font-size: 1.2rem;
+        font-family: "Tauri", sans-serif;
+        font-weight: 400;
+        font-style: normal;
+      }
+
+      .btn{
+        margin-top: 2rem;
+        color: black;
+        font-size: 1.5rem;
+        font-weight: 700;
+        width: 15rem;
+    }
+
+    .form-control{
+        width: 30rem;
+        margin: 0 auto;
+    }
+
+    .form{
+        margin-top: 2rem;
+        font-size: 1.7rem;
+    }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <h1 class="heading">Confirm Payment</h1>
+
+    <h2>Download of a book costs ₹249/-</h2>
+    <h3>Are you sure you want to download book, "{{book.title}}"?</h3>
+
+    <form id="payment_form" class="form" method="post">
+    <div>
+        <label for="password" class="col-form-label">Password</label>
+        <input type="password" name="password" placeholder="Enter your password" class="form-control" required>
+    </div>
+
+    <div class="col-12 d-flex justify-content-center">
+        <a href="{{url_for('download_book', title=book.title )}}"> <button type="submit" id="payment_button" class="btn btn-warning me-5"> Pay </button></a>
+    </div>
+
+    </form> 
+{% endblock %}
+
+{% block script %}
+    <script>
+        // Wait for the DOM to be fully loaded
+        document.addEventListener("DOMContentLoaded", function() {
+            // Get the form and button elements
+            const form = document.getElementById("payment_form");
+            const payButton = document.getElementById("payment_button");
+
+            // Add click event listener to the pay button
+            payButton.addEventListener("click", function() {
+                // Simulate form submission
+                form.submit();
+            });
+
+            // Redirect to my_books after 5 seconds
+            setTimeout(function() {
+                window.location.href = "{{ url_for('my_books') }}";
+            }, 5000); // 5000 milliseconds = 5 seconds
+        });
+    </script>
+{% endblock %}

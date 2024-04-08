@@ -1,4 +1,4 @@
-from flask import render_template, request, redirect, url_for, flash, session, make_response
+from flask import render_template, request, redirect, url_for, flash, session, make_response, send_file, after_this_request
 from app import app
 from models import db, User, Section, Book, Requests_Active, Issues_Active, Requests_Rejected, Issues_Expired
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -28,7 +28,7 @@ def lib_check(func):
 
         if not user.is_librarian:
             flash("You Are Not Authorized To Access This Page")
-            return redirect(url_for('lib_dashboard'))
+            return redirect(url_for('student_login'))
         return func(*args, **kwargs)
     return check
 
@@ -75,7 +75,30 @@ def lib_login_post():
 @app.route('/librarian/dashboard')
 @lib_check
 def lib_dashboard():
-    return render_template('lib_dashboard.html')
+    sections_count = db.session.query(Section).count()
+    books_count = db.session.query(Book).count()
+    requests_count = db.session.query(Requests_Active).count()
+    curr_issues_count = db.session.query(Issues_Active).count()
+    exp_issues_count = db.session.query(Issues_Expired).count()
+    all_issues_count = curr_issues_count + exp_issues_count
+
+    users = User.query.all()
+    all_users = list()
+    user_issues = list()
+    for user in users:
+        if not user.is_librarian:
+            all_users.append(user.user_name)
+            user_issues.append(user.books_issued)
+
+    sections = Section.query.all()
+    section_names = list()
+    section_books = list()
+    for section in sections:
+        section_names.append(section.title)
+        num_books = len(section.books)
+        section_books.append(num_books)
+
+    return render_template('lib_dashboard.html', sections_count=sections_count, books_count=books_count, requests_count=requests_count, curr_issues_count=curr_issues_count, all_issues_count=all_issues_count, all_users=all_users, user_issues=user_issues, section_names=section_names, section_books=section_books)
 
 
 @app.route('/librarian/profile')
@@ -84,7 +107,50 @@ def lib_profile():
     user = User.query.get(session['user_id'])
     # Checking if user_id is present in cookies i.e. whether user has an account or not
     # Checking is done with authentication decorator
-    return render_template('lib_profile.html')
+    return render_template('lib_profile.html', user=user)
+
+@app.route('/librarian/profile/edit')
+@lib_check
+def lib_profile_edit():
+    user = User.query.get(session['user_id'])
+    return render_template('lib_profile_edit.html', user=user)
+
+@app.route('/librarian/profile/edit', methods=['POST'])
+@lib_check
+def lib_profile_edit_post():
+    user = User.query.get(session['user_id'])
+
+    username = request.form.get('username')
+    curr_password = request.form.get('curr_password')
+    new_password = request.form.get('new_password')
+
+    if not username or not curr_password:
+        flash("Username And Current Password Cannot Be Empty")
+        return redirect(url_for('lib_profile_edit'))
+    
+    if username != user.user_name:
+        user_check = User.query.filter_by(user_name=username).first()
+        if user_check:
+            flash("User Already Exists, Choose Another Username")
+            return redirect(url_for('lib_profile_edit'))
+        
+    if len(username) > 16:
+        flash("Username Can Contain At-Most 16 Characters")
+        return redirect(url_for('lib_profile_edit'))
+        
+    if not check_password_hash(user.pass_hash, curr_password):
+        flash("Incorrect Current Password")
+        return redirect(url_for('lib_profile_edit'))
+
+    if new_password:
+        password_hash = generate_password_hash(new_password)
+        user.pass_hash=password_hash
+
+    user.user_name=username
+    db.session.commit()
+
+    flash('Profile Edited Successfully')
+    return redirect(url_for('lib_profile'))
 
 @app.route('/logout')
 @authentication
@@ -468,15 +534,33 @@ def delete_book_post(section_id, book_id):
 @app.route('/librarian/active-requests')
 @lib_check
 def active_requests():
-    entries = Requests_Active.query.all()
-    books = list()
-    users = list()
-    for entry in entries:
+    all_entries = Requests_Active.query.all()
+    entries = list()
+    for entry in all_entries:
         book = Book.query.filter_by(book_id=entry.book_id).first()
-        books.append(book.title)
         user = User.query.filter_by(user_id=entry.user_id).first()
-        users.append(user.user_name)
-    return render_template('lib_active_requests.html', books=books, users=users)
+        entries.append((book.title, user.user_name))
+    return render_template('lib_active_requests.html', entries=entries)
+
+@app.route('/librarian/view/student-profile/<string:username>')
+@lib_check
+def view_student_profile(username):
+    user = User.query.filter_by(user_name=username).first()
+    if not user:
+        flash("Student Does Not Exist")
+        return redirect(url_for('active_requests'))
+    
+    return render_template('lib_view_student.html', user=user)
+
+@app.route('/librarian/view/book/<string:title>')
+@lib_check
+def view_book_details(title):
+    book = Book.query.filter_by(title=title).first()
+    if not book:
+        flash("Book Does Not Exist")
+        return redirect(url_for('active_requests'))
+    
+    return render_template('lib_view_book.html', book=book)
 
 @app.route('/librarian/grant-book/<string:username>/<string:title>')
 @lib_check
@@ -485,7 +569,7 @@ def grant_book(username, title):
     book = Book.query.filter_by(title=title).first()
     curr_date = datetime.now().date()
     # formatted_curr_date = curr_date.strftime("%Y-%m-%d")
-    return_date = curr_date + timedelta(days=7)
+    return_date = curr_date + timedelta(days=0)
     # formatted_return_date = return_date.strftime("%Y-%m-%d")
     issue = Issues_Active(user_id=user.user_id, book_id=book.book_id, issue_date=curr_date, end_date=return_date)
 
@@ -518,6 +602,38 @@ def reject_request(username, title):
 
     flash('Book Request Rejected')
     return redirect(url_for('active_requests'))
+
+
+@app.route('/librarian/active-issues')
+@lib_check
+def active_issues():
+    all_issues = Issues_Active.query.all()
+    issues = list()
+    for issue in all_issues:
+        book = Book.query.filter_by(book_id=issue.book_id).first()
+        user = User.query.filter_by(user_id=issue.user_id).first()
+        issues.append((book.title, user.user_name, issue.issue_date, issue.end_date))
+
+    return render_template('lib_active_issues.html', issues=issues)
+
+@app.route('/librarian/revoke-book/<string:username>/<string:title>')
+@lib_check
+def revoke_book(username, title):
+    user = User.query.filter_by(user_name=username).first()
+    book = Book.query.filter_by(title=title).first()
+    
+    issue_details = Issues_Active.query.filter_by(user_id=user.user_id, book_id=book.book_id).first()
+    curr_date = datetime.now().date()
+
+    expired = Issues_Expired(user_id=user.user_id, book_id=book.book_id, issue_date=issue_details.issue_date, returned_date=curr_date, cause='Librarian')
+    db.session.add(expired)
+    db.session.delete(issue_details)
+    db.session.commit()
+
+    flash('Book Revoked Successfully')
+    return redirect(url_for('active_issues'))
+
+
 
 
 
@@ -596,18 +712,101 @@ def student_login_post():
         return redirect(url_for('lib_login'))
     
     session['user_id'] = user.user_id
+
     flash('Login Successful')
     return redirect(url_for('student_dashboard'))
 
 @app.route('/student/dashboard')
 @authentication
 def student_dashboard():
-    return render_template('student/student_dashboard.html')
+    user = User.query.get(session['user_id'])
+    sections_count = db.session.query(Section).count()
+    books_count = db.session.query(Book).count()
+    requests_count = db.session.query(Requests_Active).filter_by(user_id=user.user_id).count()
+    curr_issues_count = db.session.query(Issues_Active).filter_by(user_id=user.user_id).count()
+    exp_issues_count = db.session.query(Issues_Expired).filter_by(user_id=user.user_id).count()
+
+    sections = Section.query.all()
+    section_issues = dict()
+    for section in sections:
+        count = 0
+        curr_issues = db.session.query(Issues_Active).filter_by(user_id=user.user_id).all()
+        for curr_issue in curr_issues:
+            if curr_issue.book_id in section.books:
+                count += 1
+
+        exp_issues = db.session.query(Issues_Expired).filter_by(user_id=user.user_id).all()
+        for exp_issue in exp_issues:
+            if exp_issue.book_id in section.books:
+                count += 1
+
+        section_issues[section.title] = count
+        
+    sections = Section.query.all()
+    section_names = list()
+    section_books = list()
+    for section in sections:
+        section_names.append(section.title)
+        num_books = len(section.books)
+        section_books.append(num_books)
+
+    books_downloaded = user.books_downloaded
+
+    return render_template('student/student_dashboard.html', sections_count=sections_count, books_count=books_count, requests_count=requests_count, curr_issues_count=curr_issues_count, exp_issues_count=exp_issues_count, section_titles=list(section_issues.keys()), count_issues=list(section_issues.values()), section_names=section_names, section_books=section_books, books_downloaded=books_downloaded)
+
 
 @app.route('/student/profile')
 @authentication
 def student_profile():
-    return render_template('student/student_profile.html')
+    user = User.query.get(session['user_id'])
+    return render_template('student/student_profile.html', user=user)
+
+@app.route('/student/profile/edit')
+@authentication
+def student_profile_edit():
+    user = User.query.get(session['user_id'])
+    return render_template('student/student_profile_edit.html', user=user)
+
+@app.route('/student/profile/edit', methods=['POST'])
+@authentication
+def student_profile_edit_post():
+    user = User.query.get(session['user_id'])
+
+    username = request.form.get('username')
+    curr_password = request.form.get('curr_password')
+    new_password = request.form.get('new_password')
+    name = request.form.get('name')
+    stream = request.form.get('stream')
+
+    if not username or not curr_password or not name:
+        flash("Username, Current Password And Name Cannot Be Empty")
+        return redirect(url_for('student_profile_edit'))
+    
+    if username != user.user_name:
+        user_check = User.query.filter_by(user_name=username).first()
+        if user_check:
+            flash("User Already Exists, Choose Another Username")
+            return redirect(url_for('student_profile_edit'))
+        
+    if len(username) > 16:
+        flash("Username Can Contain At-Most 16 Characters")
+        return redirect(url_for('student_profile_edit'))
+        
+    if not check_password_hash(user.pass_hash, curr_password):
+        flash("Incorrect Current Password")
+        return redirect(url_for('student_profile_edit'))
+
+    if new_password:
+        password_hash = generate_password_hash(new_password)
+        user.pass_hash=password_hash
+
+    user.user_name = username
+    user.name = name
+    user.stream = stream
+    db.session.commit()
+
+    flash('Profile Edited Successfully')
+    return redirect(url_for('student_profile'))
 
 
 @app.route('/student/books')
@@ -733,14 +932,29 @@ def my_books():
     books = list()
     for issue in issues:
         book = Book.query.filter_by(book_id=issue.book_id).first()
-        books.append(book.title)
+        books.append((book.title, issue.issue_date, issue.end_date))
 
-    return render_template('student/my_books.html', books=books)
+    returns = Issues_Expired.query.filter_by(user_id=user.user_id).order_by(Issues_Expired.ie_id.desc()).limit(5).all()
+    expires = list()
+    for return_iter in returns:
+        book = Book.query.filter_by(book_id=return_iter.book_id).first()
+        if return_iter.cause == "Librarian":
+            cause = "Revoked by Librarian"
+        elif return_iter.cause == "Student":
+            cause = "Returned by You"
+        elif return_iter.cause == "Automatically":
+            cause = "Issue period over"
+        expires.append((book.title, return_iter.issue_date, return_iter.returned_date, cause))
+
+    return render_template('student/my_books.html', books=books, expires=expires)
 
 @app.route('/student/read/<string:title>')
 @authentication
 def read_book(title):
     book = Book.query.filter_by(title=title).first()
+    if not book:
+        flash("Book Does Not Exist")
+        return redirect(url_for('my_books'))
     book_path = "book_pdfs/" + book.content
 
     book = make_response(open(book_path, 'rb').read())
@@ -748,3 +962,97 @@ def read_book(title):
     book.headers['Content-Disposition'] = 'inline; filename=book.pdf'
 
     return book
+
+@app.route('/student/return-book/confirm/<string:title>')
+@authentication
+def return_book_confirm(title):
+    book = Book.query.filter_by(title=title).first()
+    if not book:
+        flash("Book Does Not Exist")
+        return redirect(url_for('my_books'))
+    return render_template('student/return_book_confirm.html', title=title)
+
+@app.route('/student/return-book/<string:title>')
+@authentication
+def return_book(title):
+    user = User.query.get(session['user_id'])
+    book = Book.query.filter_by(title=title).first()
+    if not book:
+        flash("Book Does Not Exist")
+        return redirect(url_for('my_books'))
+
+    issue_details = Issues_Active.query.filter_by(user_id=user.user_id, book_id=book.book_id).first()
+    curr_date = datetime.now().date()
+
+    expired = Issues_Expired(user_id=user.user_id, book_id=book.book_id, issue_date=issue_details.issue_date, returned_date=curr_date, cause='Student')
+    db.session.add(expired)
+    db.session.delete(issue_details)
+    db.session.commit()
+
+    flash('Book Returned Successfully')
+    return redirect(url_for('my_books'))
+
+@app.route('/student/book/download/<string:title>')
+@authentication
+def download_book(title):
+    book = Book.query.filter_by(title=title).first()
+    if not book:
+        flash("Book Does Not Exist")
+        return redirect(url_for('my_books'))
+    
+    pdf_path = f"book_pdfs/{book.content}"
+    filename = f"{book.title}.pdf"
+
+    user = User.query.get(session['user_id'])
+    user.books_downloaded = user.books_downloaded + 1
+    db.session.commit()
+
+    flash("Book Downloaded Successfully")
+    return send_file(pdf_path, as_attachment=True, download_name=filename)
+
+@app.route('/student/book/download/payment/<string:title>')
+@authentication
+def confirm_payment(title):
+    book = Book.query.filter_by(title=title).first()
+    if not book:
+        flash("Book Does Not Exist")
+        return redirect(url_for('my_books'))
+
+    return render_template('student/confirm_payment.html', book=book)
+
+@app.route('/student/book/download/payment/<string:title>', methods=['POST'])
+@authentication
+def confirm_payment_post(title):
+    user = User.query.get(session['user_id'])
+    book = Book.query.filter_by(title=title).first()
+    if not book:
+        flash("Book Does Not Exist")
+        return redirect(url_for('my_books'))
+
+    password = request.form.get('password')
+
+    if not check_password_hash(user.pass_hash, password):
+        flash("Incorrect Password")
+        return redirect(url_for('confirm_payment', title=title))
+    
+    return redirect(url_for('download_book', title=title))
+
+
+def check_issue_expiration():
+    if 'user_id' in session:
+        user = User.query.get(session['user_id'])
+        if user and not user.is_librarian:
+            issue_details = Issues_Active.query.filter_by(user_id=user.user_id).all()
+            curr_date = datetime.now().date()
+
+            for issue_detail in issue_details:
+                if curr_date > issue_detail.end_date:
+                    expired = Issues_Expired(user_id=user.user_id, book_id=issue_detail.book_id, issue_date=issue_detail.issue_date, returned_date=curr_date, cause='Automatically')
+                    db.session.add(expired)
+                    db.session.delete(issue_detail)
+                    db.session.commit()
+
+@authentication
+@app.before_request
+def run_check_issue_expiration():
+    check_issue_expiration()

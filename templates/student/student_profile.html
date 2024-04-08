@@ -32,9 +32,9 @@
         margin-bottom: 0;
       }
   
-      h1{
+      .heading{
           font-family: "Laila", serif;
-          font-size: 2.2rem;
+          font-size: 4rem;
           margin-bottom: 2rem;
       }
   
@@ -44,9 +44,75 @@
         font-weight: 400;
         font-style: normal;
       }
+
+      .content{
+        margin-left: 10rem;
+        margin-right: 10rem;
+        display: flex;
+        border: 0.5px dashed black;
+        padding: 2rem 18rem 2rem 4rem;
+        border-radius: 5rem;
+        font-family: "Montserrat", sans-serif;
+      }
+
+      .avatar{
+        border: 6px solid black;
+        border-radius: 50%;
+        height: 20rem;
+      }
+
+      .profile{
+        margin-left: 5rem;
+        text-align: left;
+      }
+
+      .profile .username{
+        font-size: 7rem;
+      }
+
+      .profile h2{
+        font-style: italic;
+      }
+
+      .show{
+        border: 2px solid #000;
+        border-radius: 1rem;
+        background-color: #BAEE76;
+        font-size: 1.5rem;
+        transition: .3s;
+        padding: .5rem 1rem .5rem 1rem;
+        margin-top: 3rem;
+        width: 10rem;
+        height: 4rem;
+      }
+
+      .show:hover{
+        box-shadow: 6px 6px #8ec151;
+        transition: .3s;
+      }
     </style>
 {% endblock %}
 
 {% block body %}
-    <h1>Hello Profile page coming soon</h1>
+    <h1 class="heading">My Profile</h1>
+
+    <div class="content">
+        <div class="avatar">
+            <img src="https://api.dicebear.com/6.x/lorelei/svg?seed={{user.user_name}}" alt="Avatar" width="300rem">
+        </div>
+
+        <div class="profile">
+            <h1 class="username">{{user.user_name}}</h1>
+            <h1>Name: <strong>{{user.name}}</strong></h1>
+            {% if user.stream != "" %}
+                <h2>Student of "<strong>{{user.stream}}</strong>"</h2>
+            {% else %}
+                <h2>Student</h2>
+            {% endif %}
+            <h2>{{user.books_issued}} issues yet</h2>
+
+            <a href="{{url_for('student_profile_edit', user=user)}}"><button class="show">Edit Profile</button></a>
+        </div>
+        
+    </div>
 {% endblock %}

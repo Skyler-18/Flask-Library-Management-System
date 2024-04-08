@@ -72,6 +72,8 @@
         <tr>
             <th scope="col">S.No.</th>
             <th scope="col">Book Name</th>
+            <th scope="col">Issued Date</th>
+            <th scope="col">Return Date</th>
             <th scope="col">Action</th> <!-- New column without heading -->
         </tr>
     </thead>
@@ -81,14 +83,32 @@
                 <td>{{ i }}</td>
                 <td>
                     {% if books[i-1] %}
-                        {{ books[i-1] }}
+                        {{ books[i-1][0] }}
                     {% else %}
                         ....
                     {% endif %}
                 </td>
                 <td>
                     {% if books[i-1] %}
-                    <a href="{{url_for('read_book', title=books[i-1])}}" target="_blank"> <button type="submit" class="btn btn-success">Read</button> </a>
+                        {{ books[i-1][1] }}
+                    {% else %}
+                        ....
+                    {% endif %}
+                </td>
+                <td>
+                    {% if books[i-1] %}
+                        {{ books[i-1][2] }}
+                    {% else %}
+                        ....
+                    {% endif %}
+                </td>
+                <td>
+                    {% if books[i-1] %}
+                    <a href="{{url_for('read_book', title=books[i-1][0])}}" target="_blank" class="btn btn-success">Read </a>
+                    <a href="{{url_for('confirm_payment', title=books[i-1][0])}}" class="btn btn-primary">Download </a>
+                    <a href="{{url_for('return_book_confirm', title=books[i-1][0])}}" class="btn btn-warning">Return </a>
+                    {% else %}
+                        ....
                     {% endif %}
                 </td>
             </tr>
@@ -99,4 +119,61 @@
 </div>
 </div>
 
+
+
+<h1 class="heading">Recently Over Issues</h1>
+  
+  <div class="container">
+    <div class="row">
+      <div class="col">
+
+  <table class="table table-bordered table-striped active-requests">
+    <thead class="table-dark">
+        <tr>
+            <th scope="col">S.No.</th>
+            <th scope="col">Book Name</th>
+            <th scope="col">Issued Date</th>
+            <th scope="col">Returned Date</th> <!-- New column without heading -->
+            <th scope="col">Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for i in range(1, 6) %}
+            <tr>
+                <td>{{ i }}</td>
+                <td>
+                    {% if expires[i-1] %}
+                        {{ expires[i-1][0] }}
+                    {% else %}
+                        ....
+                    {% endif %}
+                </td>
+                <td>
+                    {% if expires[i-1] %}
+                        {{ expires[i-1][1] }}
+                    {% else %}
+                        ....
+                    {% endif %}
+                </td>
+                <td>
+                    {% if expires[i-1] %}
+                        {{ expires[i-1][2] }}
+                    {% else %}
+                        ....
+                    {% endif %}
+                </td>
+                <td>
+                    {% if expires[i-1] %}
+                        {{ expires[i-1][3] }}
+                    {% else %}
+                        ....
+                    {% endif %}
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+</div>
+</div>
+</div>
 {% endblock %}

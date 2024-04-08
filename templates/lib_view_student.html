@@ -46,11 +46,11 @@
       }
 
       .content{
-        display: flex;
         margin-left: 10rem;
         margin-right: 10rem;
+        display: flex;
         border: 0.5px dashed black;
-        padding: 1rem 10rem 2rem 2rem;
+        padding: 2rem 18rem 2rem 4rem;
         border-radius: 5rem;
         font-family: "Montserrat", sans-serif;
       }
@@ -58,6 +58,7 @@
       .avatar{
         border: 6px solid black;
         border-radius: 50%;
+        height: 20rem;
       }
 
       .profile{
@@ -65,7 +66,7 @@
         text-align: left;
       }
 
-      .profile h1{
+      .profile .username{
         font-size: 7rem;
       }
 
@@ -77,10 +78,12 @@
         border: 2px solid #000;
         border-radius: 1rem;
         background-color: #BAEE76;
-        font-size: 1.3rem;
+        font-size: 1.5rem;
         transition: .3s;
         padding: .5rem 1rem .5rem 1rem;
-        margin-top: 4rem;
+        margin-top: 3rem;
+        width: 10rem;
+        height: 4rem;
       }
 
       .show:hover{
@@ -91,17 +94,23 @@
 {% endblock %}
 
 {% block body %}
-    <h1 class="heading">Profile</h1>
+    <h1 class="heading">Student Profile</h1>
+
     <div class="content">
         <div class="avatar">
             <img src="https://api.dicebear.com/6.x/lorelei/svg?seed={{user.user_name}}" alt="Avatar" width="300rem">
         </div>
 
         <div class="profile">
-            <h1>{{user.user_name}}</h1>
-            <h2>Librarian</h2>
+            <h1 class="username">{{user.user_name}}</h1>
+            <h1>Name: <strong>{{user.name}}</strong></h1>
+            {% if user.stream != "" %}
+                <h2>Student of "<strong>{{user.stream}}</strong>"</h2>
+            {% else %}
+                <h2>Student</h2>
+            {% endif %}
+            <h2>{{user.books_issued}} issues yet</h2>
 
-            <a href="{{url_for('lib_profile_edit', user=user)}}"><button class="show">Change Username or Password</button></a>
         </div>
         
     </div>

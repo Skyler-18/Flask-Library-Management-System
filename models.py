@@ -12,6 +12,7 @@ class User(db.Model):
     stream = db.Column(db.String(50))
     is_librarian = db.Column(db.Boolean, default=False)
     books_issued = db.Column(db.Integer, nullable=False, default=0)
+    books_downloaded = db.Column(db.Integer, nullable=False, default=0)
 
 class Section(db.Model):
     section_id = db.Column(db.Integer, primary_key=True)
@@ -39,8 +40,6 @@ class Requests_Active(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.user_id'), nullable=False)
     book_id = db.Column(db.Integer, db.ForeignKey('book.book_id'), nullable=False)
 
-    requested_books = db.relationship('Book', backref='requests_active', lazy=True)
-
 class Issues_Active(db.Model):
     ia_id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.user_id'), nullable=False)
@@ -53,8 +52,6 @@ class Requests_Rejected(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.user_id'), nullable=False)
     book_id = db.Column(db.Integer, db.ForeignKey('book.book_id'), nullable=False)
     date_rejected = db.Column(db.Date, nullable=False)
-
-    #         <!-- {% if (criteria=='book' and search.lower() in book.title.lower()) or (criteria=='language' and search.lower() in book.language.lower()) or (criteria=='pages' and book.pages<=search) or (criteria=='issues' and book.issue_num<=search) or (not criteria)%} -->
 
 class Issues_Expired(db.Model):
     ie_id = db.Column(db.Integer, primary_key=True)

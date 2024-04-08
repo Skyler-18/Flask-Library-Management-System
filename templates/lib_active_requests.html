@@ -53,6 +53,15 @@
         font-family: "Montserrat", sans-serif;
         font-size: 1.5rem;
       }
+
+      a{
+        text-decoration: none;
+        color: #000;
+      }
+
+      a:hover{
+        color: blue;
+      }
     </style>
 {% endblock %}
 
@@ -69,27 +78,23 @@
             <th scope="col">S.No.</th>
             <th scope="col">User</th>
             <th scope="col">Book Name</th>
-            <th scope="col"></th> <!-- New column without heading -->
+            <th scope="col">Action</th> <!-- New column without heading -->
         </tr>
     </thead>
     <tbody>
-        {% for i in range(books|length) %}
+        {% for i in range(entries|length) %}
             <tr>
                 <td>{{ i+1 }}</td>
                 <td>
-                    {{users[i]}}
+                    <a href="{{url_for('view_student_profile', username=entries[i][1])}}"> {{entries[i][1]}} </a>
                 </td>
                 <td>
-                    {{books[i]}}
+                    <a href="{{url_for('view_book_details', title=entries[i][0])}}"> {{entries[i][0]}} </a>
                 </td>
                 <td>
-                    <form action="{{url_for('grant_book', username=users[i], title=books[i])}}">
-                        <button type="submit" class="btn btn-success">Grant Book</button> 
-                    </form>
+                    <a href="{{url_for('grant_book', username=entries[i][1], title=entries[i][0])}}" class="btn btn-success">Grant Book</a> 
                     
-                    <form action="{{url_for('reject_request', username=users[i], title=books[i])}}">
-                        <button type="submit" class="btn btn-danger">Cancel Request</button> 
-                    </form>
+                    <a href="{{url_for('reject_request', username=entries[i][1], title=entries[i][0])}}" class="btn btn-danger">Cancel Request</a> 
                 </td>
             </tr>
         {% endfor %}

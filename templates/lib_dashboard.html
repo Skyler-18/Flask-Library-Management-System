@@ -32,9 +32,9 @@
         margin-bottom: 0;
       }
   
-      h1{
+      .heading{
           font-family: "Laila", serif;
-          font-size: 2.2rem;
+          font-size: 4rem;
           margin-bottom: 2rem;
       }
   
@@ -44,9 +44,253 @@
         font-weight: 400;
         font-style: normal;
       }
+
+      .content{
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        text-align: center;
+        font-family: "Montserrat", sans-serif;
+        margin-bottom: 3rem;
+      }
+
+      .block{
+        border: 6px solid #000;
+        margin-left: 5rem;
+        margin-right: 5rem;
+        margin-bottom: 2rem;
+        width: 15rem;
+        height: 15rem;
+        border-radius: 30%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        overflow: hidden;
+        word-wrap: break-word;
+        padding: 1rem;
+      }
+
+      .num{
+        font-size: 5rem;
+      }
+
+      .block1{
+        background-color: #D11149;
+      }
+
+      .block2{
+        background-color: #86CD82;
+      }
+
+      .block3{
+        background-color: #FFCAAF;
+      }
+
+      .block4{
+        background-color: #0FA3B1;
+      }
+
+      .block5{
+        background-color: #3772FF;
+      }
+
+      .block6{
+        background-color: aqua;
+      }
+
+      .charts{
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10rem;
+      }
+
+      canvas{
+        width: 35rem;
+        height: 35rem;        
+      }
     </style>
 {% endblock %}
 
 {% block body %}
-    <h1>Hello Dashboard coming soon</h1>
+    <h1 class="heading">Dashboard</h1>
+
+    <div class="content">
+        <div class="block block1">
+            <h1>Pending Requests</h1>
+            <h1 class="num">{{requests_count}}</h1>
+        </div>
+        <div class="block block2">
+            <h1>Active Issues</h1>
+            <h1 class="num">{{curr_issues_count}}</h1>
+        </div>
+        <div class="block block3">
+            <h1>Total Issues</h1>
+            <h1 class="num">{{all_issues_count}}</h1>
+        </div>
+        <div class="block block4">
+            <h1>Sections</h1>
+            <h1 class="num">{{sections_count}}</h1>
+        </div>
+        <div class="block block5">
+            <h1>Books</h1>
+            <h1 class="num">{{books_count}}</h1>
+        </div>
+        <div class="block block6">
+          <h1>Students</h1>
+          <h1 class="num">{{all_users|length}}</h1>
+      </div>
+    </div>
+    
+    <h1 class="heading">Stats</h1>
+    <div class="charts">
+        <canvas id="stats_bar"></canvas>
+        <canvas id="stats_pie"></canvas>
+    </div>
+    
+{% endblock %}
+
+{% block script %}
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    const issues = document.querySelector('#stats_bar');
+
+    new Chart(issues, {
+      type: 'bar',
+      data: {
+        labels: {{all_users|safe}},
+        datasets: [{
+          label: 'Number of Issues',
+          data: {{user_issues|safe}},
+          backgroundColor: [ // Custom bar colors
+            'rgba(54, 162, 235, 0.7)', // Red
+            'rgba(255, 99, 132, 0.7)', // Blue
+            'rgba(255, 206, 86, 0.7)', // Yellow
+            'rgba(75, 192, 192, 0.7)', // Green
+            'rgba(153, 102, 255, 0.7)' // Purple
+          ],
+          borderColor: [ // Border colors
+            'rgba(54, 162, 235, 1)',
+            'rgba(255, 99, 132, 1)',
+            'rgba(255, 206, 86, 1)',
+            'rgba(75, 192, 192, 1)',
+            'rgba(153, 102, 255, 1)'
+          ],
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: false, // Set responsive to false
+        maintainAspectRatio: false, // Disable aspect ratio
+         // Set height of the chart
+        scales: {
+          x: {
+            ticks: {
+              font: {
+                size: 15, // Reduce font size of x-axis labels
+                color: 'black' // Font color
+              }
+            }
+          },
+          y: {
+            ticks: {
+              font: {
+                size: 15, // Reduce font size of y-axis labels
+                color: 'black' // Font color
+              }
+            }
+          }
+        },
+        layout: {
+          padding: {
+            left: 20,  // Reduce margin on the left side
+            right: 20  // Reduce margin on the right side
+          }
+        },
+        plugins: {
+          title: {
+            display: true,
+            text: 'User Issues',
+            font: {
+              size: 20,
+              weight: 'bold',
+              family: 'Times',
+              color: 'black' // Font color
+            }
+          },
+          legend: {
+            display: false
+          }
+        }
+      }
+    });
+
+
+    const books = document.getElementById('stats_pie').getContext('2d');
+
+    new Chart(books, {
+        type: 'pie',
+        data: {
+            labels: {{ section_names|safe }},
+            datasets: [{
+                label: 'Number of Books',
+                data: {{ section_books|safe }},
+                backgroundColor: [
+                    'rgba(153, 102, 255, 0.7)',
+                    'rgba(75, 192, 192, 0.7)',
+                    'rgba(54, 162, 235, 0.7)',
+                    'rgba(255, 206, 86, 0.7)',
+                    'rgba(255, 99, 132, 0.7)'
+                ],
+                borderColor: [
+                    'rgba(153, 102, 255, 1)',
+                    'rgba(75, 192, 192, 1)',
+                    'rgba(54, 162, 235, 1)',
+                    'rgba(255, 206, 86, 1)',
+                    'rgba(255, 99, 132, 1)' 
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: false, // Set responsive to false
+            maintainAspectRatio: false, // Disable aspect ratio
+             // Set height of the chart
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Books in Sections',
+                    font: {
+                        size: 20,
+                        weight: 'bold',
+                        family: 'Times',
+                        color: 'black' // Font color
+                    }
+                },
+                legend: {
+                    display: true,
+                    position: 'bottom', // Position of the legend
+                    labels: {
+                        font: {
+                            size: 15, // Reduce font size of legend labels
+                            color: 'black' // Font color of legend labels
+                        }
+                    }
+                }
+            },
+            layout: {
+                padding: {
+                    left: 60,  // Reduce padding on the left side
+                    right: 20,
+                    top: 20,  // Reduce padding on the top
+                    bottom: 20  // Reduce padding on the bottom
+                }
+            }
+        }
+    });
+
+</script>
+
 {% endblock %}
