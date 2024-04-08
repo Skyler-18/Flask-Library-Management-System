@@ -730,15 +730,17 @@ def student_dashboard():
     section_issues = dict()
     for section in sections:
         count = 0
-        curr_issues = db.session.query(Issues_Active).filter_by(user_id=user.user_id).all()
+        curr_issues = Issues_Active.query.filter_by(user_id=user.user_id).all()
         for curr_issue in curr_issues:
-            if curr_issue.book_id in section.books:
-                count += 1
+            for book in section.books:
+                if curr_issue.book_id==book.book_id:
+                    count += 1
 
-        exp_issues = db.session.query(Issues_Expired).filter_by(user_id=user.user_id).all()
+        exp_issues = Issues_Expired.query.filter_by(user_id=user.user_id).all()
         for exp_issue in exp_issues:
-            if exp_issue.book_id in section.books:
-                count += 1
+            for book in section.books:
+                if exp_issue.book_id==book.book_id:
+                    count += 1
 
         section_issues[section.title] = count
         
