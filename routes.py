@@ -1,4 +1,4 @@
-from flask import render_template, request, redirect, url_for, flash, session, make_response, send_file, after_this_request
+from flask import render_template, request, redirect, url_for, flash, session, make_response, send_file
 from app import app
 from models import db, User, Section, Book, Requests_Active, Issues_Active, Requests_Rejected, Issues_Expired
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -10,17 +10,22 @@ import os
 def authentication(func):
     @wraps(func)
     def check(*args, **kwargs):
-        if 'user_id' in session:
-            return func(*args, **kwargs)
-        else:
+        if not session or 'user_id' not in session:
             flash("Please Login To Continue")
             return redirect(url_for('student_login'))
+        
+        user = User.query.get(session['user_id'])
+
+        if user.is_librarian:
+            flash("Librarian Cannot Access Student Pages")
+            return redirect(url_for('lib_dashboard'))
+        return func(*args, **kwargs)
     return check
 
 def lib_check(func):
     @wraps(func)
     def check(*args, **kwargs):
-        if 'user_id' not in session:
+        if not session or 'user_id' not in session:
             flash("Please Login To Continue")
             return redirect(url_for('lib_login'))
         
@@ -28,17 +33,14 @@ def lib_check(func):
 
         if not user.is_librarian:
             flash("You Are Not Authorized To Access This Page")
-            return redirect(url_for('student_login'))
+            return redirect(url_for('student_dashboard'))
         return func(*args, **kwargs)
     return check
 
 
 @app.route('/')
 def index():
-    if 'user_id' in session:
-        return redirect(url_for('lib_dashboard'))
-    else:
-        return render_template('index.html')
+    return render_template('index.html')
 
 
 @app.route('/librarian-login')
@@ -153,15 +155,16 @@ def lib_profile_edit_post():
     return redirect(url_for('lib_profile'))
 
 @app.route('/logout')
-@authentication
 def logout():
-    user = User.query.get(session['user_id'])
-    session.pop('user_id')
-    if user.is_librarian:
-        return redirect(url_for('lib_login'))
+    if session:
+        user = User.query.get(session['user_id'])
+        session.pop('user_id')
+        if user.is_librarian:
+            return redirect(url_for('lib_login'))
+        else:
+            return redirect(url_for('student_login'))
     else:
-        return redirect(url_for('student_login'))
-
+        return redirect(url_for('index'))
 
 @app.route('/librarian/sections')
 @lib_check
@@ -867,9 +870,14 @@ def student_request_book(book_id):
         return redirect(url_for('student_books'))
     user = User.query.get(session['user_id'])
     requested_books = Requests_Active.query.filter_by(user_id=user.user_id).all()
+    check = False
+    for requested_book in requested_books:
+        if requested_book.book_id == book_id:
+            check = True
+            break
     issued_books = Issues_Active.query.filter_by(user_id=user.user_id).all()
     count = len(requested_books) + len(issued_books)
-    return render_template('student/student_request_book.html', book=book, count=count)
+    return render_template('student/student_request_book.html', book=book, count=count, check=check)
 
 @app.route('/student/my-requests')
 @authentication
@@ -877,9 +885,11 @@ def my_requests():
     user = User.query.get(session['user_id'])
     entries = Requests_Active.query.filter_by(user_id=user.user_id).all()
     books = list()
+    book_ids = list()
     for entry in entries:
         book = Book.query.filter_by(book_id=entry.book_id).first()
         books.append(book.title)
+        book_ids.append(book.book_id)
 
     requests = Requests_Rejected.query.filter_by(user_id=user.user_id).order_by(Requests_Rejected.rr_id.desc()).limit(5).all()
     rejects = list()
@@ -888,7 +898,7 @@ def my_requests():
         details = (book.title, request.date_rejected)
         rejects.append(details)
 
-    return render_template('student/my_requests.html', books=books, rejects=rejects)
+    return render_template('student/my_requests.html', books=books, rejects=rejects, book_ids=book_ids)
 
 @app.route('/student/my-requests/add/<int:book_id>', methods=['POST'])
 @authentication

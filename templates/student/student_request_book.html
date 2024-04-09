@@ -1,51 +1,15 @@
 {% extends 'student/student_layout.html' %}
 
 {% block title %}
-    Admin Page
+  {% if check==False %}
+    Request Book
+  {% else %}
+    Requested Book
+  {% endif %}
 {% endblock %}
 
 {% block style %}
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Permanent+Marker&display=swap');
-    @import url('https://fonts.googleapis.com/css2?family=Laila:wght@300;400;500;600;700&family=Permanent+Marker&display=swap');
-    @import url('https://fonts.googleapis.com/css2?family=Laila:wght@300;400;500;600;700&family=Lusitana:wght@400;700&family=Permanent+Marker&display=swap');
-    @import url('https://fonts.googleapis.com/css2?family=Tauri&display=swap');
-    @import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
-
-    *{
-        margin: 0;
-        padding: 0;
-    }
-    
-    body{
-        text-align: center;
-        background-color: #D2FFFC;
-        font-family: "Lusitana", serif;
-        margin-bottom: 1rem;
-    }
-
-    .logo{
-        color: purple;
-        font-family: "Permanent Marker", cursive;
-        font-weight: 300;
-        font-size: 4rem;
-        background-color: #FCF54D;
-        margin-bottom: 0;
-      }
-  
-      .heading{
-          font-family: "Laila", serif;
-          font-size: 2.2rem;
-          margin-bottom: 4rem;
-      }
-  
-      .nav-link{
-        font-size: 1.2rem;
-        font-family: "Tauri", sans-serif;
-        font-weight: 400;
-        font-style: normal;
-      }
-
       .desc{
         margin: 0 7rem 4rem 7rem;
       }
@@ -134,8 +98,16 @@
 {% endblock %}
 
 {% block body %}
-  <h1 class="heading">Request Book: "{{book.title}}"</h1>
-  <h2>Are you sure you want to issue this book?</h2>
+
+  {% if check == False %}
+    <h1 class="heading">Request Book: "{{book.title}}"</h1>
+  {% else %}
+    <h1 class="heading">Requested Book: "{{book.title}}"</h1>
+  {% endif %}
+
+  {% if check==False %}
+    <h2>Are you sure you want to issue this book?</h2>
+  {% endif %}
   <h4 class="desc">If the request is accepted by the librarian, the book will be issued for 7 days. Though, librarian can revoke the book and you can also return the book, before 7 days are over. </h4>
 
   <br>
@@ -152,12 +124,16 @@
         <h2 class="author">{{book.author}}</h2>
         <h4 class="language">Language: {{book.language}}</h4>
 
-        {% if count<5 %}
-        <form action="{{ url_for('my_requests_post', book_id=book.book_id) }}" method="post">
-          <button type="submit" class="view">Confirm Request</button>
-        </form>
+        {% if check==False %}
+          {% if count<5 %}
+          <form action="{{ url_for('my_requests_post', book_id=book.book_id) }}" method="post">
+            <button type="submit" class="view">Confirm Request</button>
+          </form>
+          {% else %}
+            <button class="view" disabled>Confirm Request</button> 
+          {% endif %}
         {% else %}
-          <button class="view" disabled>Confirm Request</button> 
+          <button class="view" disabled>Confirm Request</button>
         {% endif %}
 
         <span class="pages">{{book.pages}} <br> <h5>pages</h5></span>
