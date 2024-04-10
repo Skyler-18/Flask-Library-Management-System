@@ -32,8 +32,8 @@
           .top{
             font-family: "Raleway", sans-serif;
             display: flex;
-            padding: 5rem 14rem 4rem 14rem;
-            gap: 20rem;
+            padding: 5rem 5.5rem 4rem 16rem;
+            gap: 17rem;
           }
 
           .welcome h1{
@@ -69,16 +69,7 @@
 
           .img-container{
             display: flex;
-            padding-top: 5rem;
-            justify-content: center;
             align-items: center;
-          }
-
-          .img-container img{
-            width: auto;
-            height: auto;
-            border-radius: 50%;
-            border: 10px solid #ffffff;
           }
 
           .desc{
@@ -149,17 +140,23 @@
         <h1>Welcome to <br> Apni Library!</h1>
 
         <h3>Already a member?</h3>
-        <button>Log in</button>
+        <a href="{{url_for('student_login')}}">
+          <button>Log in</button>
+        </a>
 
         <h3>Don't have an account?</h3>
-        <button>Sign up</button>
+        <a href="{{url_for('register')}}">
+          <button>Sign up</button>
+        </a>
 
         <h3 class="lib">Librarian?</h3>
-        <button>Librarian Log in</button>
+        <a href="{{url_for('lib_login')}}">
+          <button>Librarian Log in</button>
+        </a>
       </div>
 
       <div class="img-container">
-        <img src="data:image/jpeg;base64,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">
+        <img src="/static/main.png">
       </div>
     </div>
 
