@@ -61,7 +61,14 @@ class Issues_Expired(db.Model):
     returned_date = db.Column(db.Date, nullable=False)
     cause = db.Column(db.String, nullable=False)
 
-    __table_args__ = (db.CheckConstraint(cause.in_(['Librarian', 'Student', 'Automatically']), name='check_cause_values'),)
+    # __table_args__ = (db.CheckConstraint(cause.in_(['Librarian', 'Student', 'Automatically']), name='check_cause_values'),)
+
+class Feedback(db.Model):
+    review_id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.user_id'), nullable=False)
+    book_id = db.Column(db.Integer, db.ForeignKey('book.book_id'), nullable=False)
+    review = db.Column(db.String, nullable=False)
+
 
 with app.app_context():
     db.create_all()

@@ -1,6 +1,6 @@
 from flask import render_template, request, redirect, url_for, flash, session, make_response, send_file
 from app import app
-from models import db, User, Section, Book, Requests_Active, Issues_Active, Requests_Rejected, Issues_Expired
+from models import db, User, Section, Book, Requests_Active, Issues_Active, Requests_Rejected, Issues_Expired, Feedback
 from werkzeug.security import generate_password_hash, check_password_hash
 from functools import wraps
 from datetime import datetime, timedelta
@@ -309,8 +309,24 @@ def open_section(section_id):
     if not section:
         flash('Section Does Not Exist')
         return redirect(url_for('lib_sections'))
-    books = section.books
-    return render_template('lib_books.html', section=section, books=books)
+    return render_template('lib_books.html', section=section)
+
+@app.route('/librarian/sections/<int:section_id>/book/<string:title>')
+@lib_check
+def book_details(section_id, title):
+    book = Book.query.filter_by(title=title).first()
+    if not book:
+        flash("Book Does Not Exist")
+        return redirect(url_for('lib_sections'))
+    
+    feedbacks = Feedback.query.filter_by(book_id=book.book_id).all()
+    reviews = list()
+    for feedback in feedbacks:
+        username = User.query.filter_by(user_id=feedback.user_id).first()
+        reviews.append((username.user_name, feedback.review))
+    
+    section = Section.query.get(section_id)
+    return render_template('book_details.html', book=book, section=section, reviews=reviews)
 
 
 @app.route('/librarian/sections/open/<int:section_id>/add')
@@ -572,7 +588,7 @@ def grant_book(username, title):
     book = Book.query.filter_by(title=title).first()
     curr_date = datetime.now().date()
     # formatted_curr_date = curr_date.strftime("%Y-%m-%d")
-    return_date = curr_date + timedelta(days=0)
+    return_date = curr_date + timedelta(days=7)
     # formatted_return_date = return_date.strftime("%Y-%m-%d")
     issue = Issues_Active(user_id=user.user_id, book_id=book.book_id, issue_date=curr_date, end_date=return_date)
 
@@ -877,7 +893,28 @@ def student_request_book(book_id):
             break
     issued_books = Issues_Active.query.filter_by(user_id=user.user_id).all()
     count = len(requested_books) + len(issued_books)
-    return render_template('student/student_request_book.html', book=book, count=count, check=check)
+
+    feedbacks = Feedback.query.filter_by(book_id=book_id).all()
+    reviews = list()
+    for feedback in feedbacks:
+        username = User.query.filter_by(user_id=feedback.user_id).first()
+        reviews.append((username.user_name, feedback.review))
+    return render_template('student/student_request_book.html', book=book, count=count, check=check, reviews=reviews)
+
+@app.route('/student/books/request/<int:book_id>', methods=['POST'])
+@authentication
+def student_request_book_post(book_id):
+    book = Book.query.get(book_id)
+    if not book:
+        flash('Book Does Not Exist')
+        return redirect(url_for('student_books'))
+    user = User.query.get(session['user_id'])
+    review = request.form.get('review')
+    feedback = Feedback(user_id=user.user_id, book_id=book_id, review=review)
+    db.session.add(feedback)
+    db.session.commit()
+
+    return redirect(url_for('student_request_book', book_id=book_id))
 
 @app.route('/student/my-requests')
 @authentication

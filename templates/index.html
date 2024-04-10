@@ -7,8 +7,7 @@
 
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Permanent+Marker&display=swap');
-        @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400..700&family=Roboto+Slab:wght@100..900&family=Source+Code+Pro:ital,wght@0,200..900;1,200..900&display=swap');
-        @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400..700&family=Roboto+Slab:wght@100..900&family=Source+Code+Pro:ital,wght@0,200..900;1,200..900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,100..900;1,100..900&display=swap');
     
         *{
             margin: 0;
@@ -30,85 +29,174 @@
             margin-bottom: 0;
           }
 
-          .intro{
+          .top{
+            font-family: "Raleway", sans-serif;
             display: flex;
-            font-family: "Roboto Slab", serif;
-            font-optical-sizing: auto;
-            font-weight: 200;
-            font-style: normal;
-            font-size: 2.5rem;
+            padding: 5rem 14rem 4rem 14rem;
+            gap: 20rem;
+          }
+
+          .welcome h1{
+            font-size: 4rem;
+            padding-bottom: 3rem;
+          }
+
+          .welcome h3{
+            font-size: 2rem;
+            padding-bottom: 0.6rem;
+          }
+
+          .welcome button{
+            margin-bottom: 2.4rem;
+            padding: 1rem;
+            width: 15rem;
+            height: 4rem;
+            font-size: 1.5rem;
+            border-radius: 40px;
+            border: 2px solid #000;
+            background-color: rgb(136, 205, 228);
+            cursor: pointer;
+          }
+
+          .welcome button:hover{
+            background-color: rgb(67, 158, 188);
+            border: none;
+          }
+
+          .welcome .lib{
             margin-top: 2rem;
-            margin-left: 4rem;
-            text-align: justify;
           }
 
-          .intro p{
-            width: 50rem;
-          }
-
-          .buttons{
+          .img-container{
             display: flex;
-            flex-direction: column;
-            text-align: center;
-            margin: 2rem 2rem 0rem 0rem;
-            padding-left: 5rem;
+            padding-top: 5rem;
+            justify-content: center;
             align-items: center;
           }
 
-          .button{
-            font-family: "Source Code Pro", monospace;
-            width: 10rem;
-            height: 5rem;
-            cursor: pointer;
-            font-size: 1.5rem;
-            color: #fff;
-            border: 3px solid #ac153b;
-            background-image: -webkit-linear-gradient(30deg, #E5446D, 50%, transparent 50%);
-            background-image: linear-gradient(30deg, #E5446D, 50%, transparent 50%);
-            background-size: 500px;
-            background-repeat: no-repeat;
-            -webkit-transition: background 300ms ease-in-out;
-            transition: background 300ms ease-in-out;
-            margin-bottom: 2rem;
+          .img-container img{
+            width: auto;
+            height: auto;
+            border-radius: 50%;
+            border: 10px solid #ffffff;
           }
 
-          .lib_login{
-            border: 3px solid #045fa4;
-            background-image: -webkit-linear-gradient(30deg, #008BF8, 50%, transparent 50%);
-            background-image: linear-gradient(30deg, #008BF8, 50%, transparent 50%);
+          .desc{
+            margin: 2rem 20rem 2rem 20rem;
           }
 
-          .button:hover{
-            background-position: 100%;
-            color: #000;
-            background-color: #E8998D;
+          .desc .points h1{
+            font-size: 3rem;
           }
 
-          .lib_login:hover{
-            color: #000;
-            background-color: #01ccfa;
+          .desc .points ul{
+            padding-top: 5rem;
+            padding-left: 10rem;
+            text-align: left;
+            font-size: 2rem;
+            list-style-type: none;
           }
 
-          h5{
-            margin-bottom: 1rem;
+          .desc .points li{
+            padding-bottom: 1rem;            
+          }
+
+          .desc .points li i{
+            padding-right: 1rem;
+          }
+
+          .desc .blocks h1{
+            font-size: 3rem;
+            padding-top: 5rem;
+            padding-bottom: 3rem;
+          }
+
+          .desc .blocks h4{
+            font-size: 2rem;
+            font-weight: 200;
+            display: inline;
+            
+          }
+
+          .desc .blocks img{
+            display: inline;
+          }
+
+          .block1, .block2, .block3{
+            padding-left: 13rem;
+            text-align: left;
+            display: flex;
+            align-items: center;
+            padding-bottom: 4rem;
+          }
+
+          .block1 h4, .block3 h4{
+            padding-right: 15rem;
+          }
+
+          .block2 img{
+            padding-right: 15rem;
           }
     </style>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 </head>
 <body>
     <h1 class="logo">Apni Library</h1>
 
-    <div class="intro">
-        <p><strong>Apni Library</strong> is an e-library platform where students can request e-books. Once approved by librarian, students gain access to the book for <strong>7 days</strong>. After this period, access is automatically revoked. Librarian have the authority to revoke access before the 7-day limit, and students can also return books early. Each student can request a maximum of <strong>5 books</strong> at a time. Additionally, there's an option to download the book, which costs <strong>₹249/-</strong>.</p>
+    <div class="top">
+      <div class="welcome">
+        <h1>Welcome to <br> Apni Library!</h1>
 
-        <div class="buttons">
-            <h5>Start your journey with <strong>Apni Library</strong>. Register!!</h5>
-            <a href="{{url_for('register')}}"> <button class="button register"> Register</button> </a>
-            <h5>Already a student </h5>
-            <a href="{{url_for('student_login')}}"> <button class="button student_login">Student Login</button> </a>
-            <h5>Login for Librarian</h5>
-            <a href="{{url_for('lib_login')}}"> <button class="button lib_login">Librarian Login</button> </a>
+        <h3>Already a member?</h3>
+        <button>Log in</button>
+
+        <h3>Don't have an account?</h3>
+        <button>Sign up</button>
+
+        <h3 class="lib">Librarian?</h3>
+        <button>Librarian Log in</button>
+      </div>
+
+      <div class="img-container">
+        <img src="data:image/jpeg;base64,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">
+      </div>
+    </div>
+
+    <div class="desc">
+      <div class="points">
+        <h1>Issuing process:</h1>
+        <ul>
+          <li><i class="fa-solid fa-circle-check"></i> Request an e-book, gain access for 7 days</li>
+          <br>
+          <li><i class="fa-solid fa-circle-check"></i> Read and return the book within 7 days</li>
+          <br>
+          <li><i class="fa-solid fa-circle-check"></i> Librarian may revoke the access before 7 days too</li>
+          <br>
+          <li><i class="fa-solid fa-circle-check"></i> Request upto 5 books at a time</li>
+          <br>
+          <li><i class="fa-solid fa-circle-check"></i> Download the book at ₹249/-</li>
+        </ul>
+      </div>
+
+      <div class="blocks">
+        <h1>Why choose us?</h1>
+
+        <div class="block1">
+          <h4>Easy and <br>quick issue!</h4>
+          <img src="#" alt="text1">
         </div>
-        
+
+        <div class="block2">
+          <img src="#" alt="text2">
+          <h4>Read <br>anywhere!</h4>
+        </div>
+
+        <div class="block3">
+          <h4>Reissue your <br>book online <br>anytime!</h4>
+          <img src="#" alt="text3">
+        </div>
+      </div>
     </div>
 </body>
 </html>

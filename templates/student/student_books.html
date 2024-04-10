@@ -130,7 +130,11 @@
                 <h3 class="author">{{book.author}}</h3>
                 <h5 class="language">Language: {{book.language}}</h5>
                 <h5 class="pages">Pages: {{book.pages}}</h5>
-                <h5 class="issues">{{book.issue_num}} issues yet</h5>
+                
+                <div class="issues">
+                  <h5>{{book.issue_num}} issues yet</h5>
+                </div>
+                
                 <div class="background-image" style="background-image: url('{{book.image}}'); filter: blur(6px);"></div>
               </div>
 
