@@ -51,7 +51,7 @@
                     <a href="{{url_for('view_student_profile', username=issues[i][1])}}"> {{issues[i][1]}} </a>
                 </td>
                 <td>
-                    <a href="{{url_for('view_book_details', title=issues[i][0])}}"> {{issues[i][0]}} </a>
+                    <a href="{{url_for('view_book_details', book_id=issues[i][4])}}"> {{issues[i][0]}} </a>
                 </td>
                 <td>
                     {{issues[i][2]}}
@@ -60,7 +60,7 @@
                     {{issues[i][3]}}
                 </td>
                 <td>
-                    <a href="{{url_for('revoke_book', username=issues[i][1], title=issues[i][0])}}" class="btn btn-warning">Revoke Book</a> 
+                    <a href="{{url_for('revoke_book', username=issues[i][1], book_id=issues[i][4])}}" class="btn btn-warning">Revoke Book</a> 
                 </td>
             </tr>
         {% endfor %}

@@ -6,34 +6,36 @@ db = SQLAlchemy(app)
 
 class User(db.Model):
     user_id = db.Column(db.Integer, primary_key=True)
-    user_name = db.Column(db.String(16), unique=True, nullable=False)
+    user_name = db.Column(db.String(10), unique=True, nullable=False)
     pass_hash = db.Column(db.String(256), nullable=False)
-    name = db.Column(db.String(48), nullable=False)
-    stream = db.Column(db.String(50))
+    name = db.Column(db.String(20), nullable=False)
+    stream = db.Column(db.String(25))
     is_librarian = db.Column(db.Boolean, default=False)
     books_issued = db.Column(db.Integer, nullable=False, default=0)
     books_downloaded = db.Column(db.Integer, nullable=False, default=0)
 
 class Section(db.Model):
     section_id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(10), unique=True, nullable=False)
-    description = db.Column(db.String(200))
+    title = db.Column(db.String(20), unique=True, nullable=False)
+    description = db.Column(db.String(125))
     date_created = db.Column(db.Date, nullable=False)
 
-    books = db.relationship('Book', backref='section', lazy=True, cascade='all, delete-orphan') #This creates a relationship between the two tables itself using the section_id which is the foreign key in Book. Now, we don't have to give specific SQL query to select all the books from Book table where section_id in both tables is matching.
+    books = db.relationship('Book', backref='section', lazy=True)
+    #This creates a relationship between the two tables itself using the section_id which is the foreign key in Book. Now, we don't have to give specific SQL query to select all the books from Book table where section_id in both tables is matching.
     #backref helps in getting the name of section of the book. If we try to get section.books, we will get all the books in the section and when we try to get book.section we will get complete section object in that case too.
     #lazy just optimizes our work. It restricts the code to fetch all the books of all the sections all the time. Instead, it only works when we call it explicityly.
 
 class Book(db.Model):
     book_id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String, unique=True, nullable=False)
+    title = db.Column(db.String, nullable=False)
     author = db.Column(db.String, nullable=False)
-    section_id = db.Column(db.Integer, db.ForeignKey('section.section_id'), nullable=False)
+    section_id = db.Column(db.Integer, db.ForeignKey('section.section_id'))
     content = db.Column(db.String, nullable=False)
     image = db.Column(db.String)
     pages = db.Column(db.Integer, nullable=False)
     language = db.Column(db.String, nullable=False)
     issue_num = db.Column(db.Integer, nullable=False, default=0)
+    is_deleted = db.Column(db.Boolean, default=False)
 
 class Requests_Active(db.Model):
     ra_id = db.Column(db.Integer, primary_key=True)
@@ -76,7 +78,7 @@ with app.app_context():
     # If librarian is not there, it will create the librarian
     librarian = User.query.filter_by(is_librarian=True).first()
     if not librarian:
-        password_hash = generate_password_hash('Admin')
-        librarian = User(user_name='Admin', pass_hash=password_hash, name='Admin', is_librarian=True)
+        password_hash = generate_password_hash('librarian')
+        librarian = User(user_name='librarian', pass_hash=password_hash, name='Librarian', is_librarian=True)
         db.session.add(librarian)
         db.session.commit()

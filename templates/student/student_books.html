@@ -47,6 +47,7 @@
       .book .title{
         font-weight: bold;
         z-index: 1;
+        font-size: 1.5rem;
       }
 
       .book .author{
@@ -54,6 +55,7 @@
         z-index: 1;
         text-align: left;
         font-weight: 400;
+        font-size: 1.2rem;
       }
 
       .book .language{
@@ -117,6 +119,7 @@
       <h1 class="section-header">{{section.title}}</h1>
       <div class="section">
         {% for book in section.books %}
+        {% if book.is_deleted == False %}
 
 
         {% if (filter_book!="" and filter_book.lower() in book.title.lower()) or (not filter_book) %}
@@ -147,6 +150,7 @@
               {% endif %}
             </div>
 
+        {% endif %}
         {% endif %}
         {% endif %}
         {% endif %}

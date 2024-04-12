@@ -1,7 +1,7 @@
 {% extends 'lib_layout.html' %}
 
 {% block title %}
-    Books
+  Books In {{section.title}}
 {% endblock %}
 
 {% block style %}
@@ -65,8 +65,9 @@
 
     <div class="books">
         {% for book in section.books %}
+        {% if book.is_deleted == False %}
 
-        <a href="{{url_for('book_details', section_id=section.section_id, title=book.title)}}">
+        <a href="{{url_for('book_details', section_id=section.section_id, book_id=book.book_id)}}">
           <div class="book">
             <h1>{{book.title}} </h1> by
             <h2> "{{book.author}}" </h2>
@@ -74,7 +75,7 @@
             <h3>{{book.issue_num}} issues yet</h3>
           </div>
         </a>
-
+        {% endif %}
         {% endfor %}
     </div>
 {% endblock %}

@@ -49,12 +49,12 @@
                     <a href="{{url_for('view_student_profile', username=entries[i][1])}}"> {{entries[i][1]}} </a>
                 </td>
                 <td>
-                    <a href="{{url_for('view_book_details', title=entries[i][0])}}"> {{entries[i][0]}} </a>
+                    <a href="{{url_for('view_book_details', book_id=entries[i][2])}}"> {{entries[i][0]}} </a>
                 </td>
                 <td>
-                    <a href="{{url_for('grant_book', username=entries[i][1], title=entries[i][0])}}" class="btn btn-success">Grant Book</a> 
+                    <a href="{{url_for('grant_book', username=entries[i][1], book_id=entries[i][2])}}" class="btn btn-success">Grant Book</a> 
                     
-                    <a href="{{url_for('reject_request', username=entries[i][1], title=entries[i][0])}}" class="btn btn-danger">Cancel Request</a> 
+                    <a href="{{url_for('reject_request', username=entries[i][1], book_id=entries[i][2])}}" class="btn btn-danger">Cancel Request</a> 
                 </td>
             </tr>
         {% endfor %}

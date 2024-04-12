@@ -16,8 +16,9 @@
         
         body{
             text-align: center;
-            background-color: #D2FFFC;
+            background-color: #E3FDFD;
             margin-bottom: 1rem;
+            font-family: "Raleway", sans-serif;
         }
     
         .logo{
@@ -30,10 +31,9 @@
           }
 
           .top{
-            font-family: "Raleway", sans-serif;
             display: flex;
-            padding: 5rem 5.5rem 4rem 16rem;
-            gap: 17rem;
+            padding: 5rem 2rem 4rem 16rem;
+            gap: 13rem;
           }
 
           .welcome h1{
@@ -56,12 +56,20 @@
             border: 2px solid #000;
             background-color: rgb(136, 205, 228);
             cursor: pointer;
+            font-family: "Raleway", sans-serif;
+            display: inline-block; 
+            position: relative; 
+            transition: 0.5s; 
           }
 
           .welcome button:hover{
             background-color: rgb(67, 158, 188);
             border: none;
+            padding-right: 24px; 
+            padding-left:8px;
           }
+
+          .welcome button:after { content: '»'; position: absolute; opacity: 0; top: 14px; right: -20px; transition: 0.5s; }
 
           .welcome .lib{
             margin-top: 2rem;
@@ -106,7 +114,7 @@
 
           .desc .blocks h4{
             font-size: 2rem;
-            font-weight: 200;
+            font-weight: 250;
             display: inline;
             
           }
@@ -116,7 +124,7 @@
           }
 
           .block1, .block2, .block3{
-            padding-left: 11rem;
+            padding-left: 7rem;
             text-align: left;
             display: flex;
             align-items: center;

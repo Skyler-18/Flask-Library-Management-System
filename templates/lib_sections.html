@@ -54,6 +54,8 @@
 
       .section h1{
         font-weight: 600;
+        white-space: wrap;
+        overflow-wrap: break-word;
       }
 
       .section p{
@@ -116,9 +118,12 @@
 
     <div class="sections">
         {% for section in sections %}
+        
 
         <div class="section">
-            <div class="num">{{section.books|length}}</div>
+            <div class="num">
+              {% set active_books = section.books|selectattr('is_deleted', 'equalto', false)|list %}
+              {{active_books|length}}</div>
             <h4 class="date">{{section.date_created}}</h4>
             <h1>{{section.title}}</h1>
             <p>{{section.description}}</p>

@@ -39,7 +39,7 @@
     </div>
 
     <div class="col-12 d-flex justify-content-center">
-        <a href="{{url_for('download_book', title=book.title )}}"> <button type="submit" id="payment_button" class="btn btn-warning me-5"> Pay </button></a>
+        <a href="{{url_for('download_book', book_id=book.book_id )}}"> <button type="submit" id="payment_button" class="btn btn-warning me-5"> Pay </button></a>
     </div>
 
     </form> 
@@ -70,7 +70,7 @@
             // Redirect to my_books after 5 seconds
             setTimeout(function() {
                 window.location.href = "{{ url_for('my_books') }}";
-            }, 5000); // 5000 milliseconds = 5 seconds
+            }, 2500); // 5000 milliseconds = 5 seconds
         });
     });
 </script>
