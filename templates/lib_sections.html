@@ -122,8 +122,7 @@
 
         <div class="section">
             <div class="num">
-              {% set active_books = section.books|selectattr('is_deleted', 'equalto', false)|list %}
-              {{active_books|length}}</div>
+              {{section.books|length}}</div>
             <h4 class="date">{{section.date_created}}</h4>
             <h1>{{section.title}}</h1>
             <p>{{section.description}}</p>

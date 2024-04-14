@@ -27,7 +27,7 @@ class Section(db.Model):
 
 class Book(db.Model):
     book_id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String, nullable=False)
+    title = db.Column(db.String, unique=True, nullable=False)
     author = db.Column(db.String, nullable=False)
     section_id = db.Column(db.Integer, db.ForeignKey('section.section_id'))
     content = db.Column(db.String, nullable=False)
@@ -35,12 +35,12 @@ class Book(db.Model):
     pages = db.Column(db.Integer, nullable=False)
     language = db.Column(db.String, nullable=False)
     issue_num = db.Column(db.Integer, nullable=False, default=0)
-    # is_deleted = db.Column(db.Boolean, default=False)
 
     requests_active = db.relationship('Requests_Active', backref='book', lazy=True, cascade='all, delete-orphan')
     issues_active = db.relationship('Issues_Active', backref='book', lazy=True, cascade='all, delete-orphan')
     requests_rejected = db.relationship('Requests_Rejected', backref='book', lazy=True, cascade='all, delete-orphan')
     issues_expired = db.relationship('Issues_Expired', backref='book', lazy=True, cascade='all, delete-orphan')
+    feedback = db.relationship('Feedback', backref='book', lazy=True, cascade='all, delete-orphan')
 
 
 class Requests_Active(db.Model):
@@ -69,7 +69,6 @@ class Issues_Expired(db.Model):
     returned_date = db.Column(db.Date, nullable=False)
     cause = db.Column(db.String, nullable=False)
 
-    # __table_args__ = (db.CheckConstraint(cause.in_(['Librarian', 'Student', 'Automatically']), name='check_cause_values'),)
 
 class Feedback(db.Model):
     review_id = db.Column(db.Integer, primary_key=True)

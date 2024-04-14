@@ -80,17 +80,10 @@ def lib_login_post():
 @app.route('/librarian/dashboard')
 @lib_check
 def lib_dashboard():
-    # sections_count = db.session.query(Section).count()
     sections_count = Section.query.count()
-    # books_count = db.session.query(Book).count()
-    # books_count = Book.query.filter_by(is_deleted=False).count()
     books_count = Book.query.count()
-    # requests_count = db.session.query(Requests_Active).count()
     requests_count = Requests_Active.query.count()
-    # curr_issues_count = db.session.query(Issues_Active).count()
     curr_issues_count = Issues_Active.query.count()
-    # exp_issues_count = db.session.query(Issues_Expired).count()
-    # exp_issues_count = Issues_Expired.query.count()
     users = User.query.all()
     all_issues_count = 0
     for user in users:
@@ -112,9 +105,7 @@ def lib_dashboard():
         num_books = 0
         section_names.append(section.title)
         for book in section.books:
-            # if not book.is_deleted:
             num_books += 1
-        # num_books = len(section.books)
         section_books.append(num_books)
 
     return render_template('lib_dashboard.html', sections_count=sections_count, books_count=books_count, requests_count=requests_count, curr_issues_count=curr_issues_count, all_issues_count=all_issues_count, all_users=all_users, user_issues=user_issues, section_names=section_names, section_books=section_books)
@@ -314,7 +305,6 @@ def delete_section(section_id):
         flash(f'{count_act_issues} Books Of This Section Are Issued Currently. Wait For Them To Return Or Revoke Them From All, To Delete This Section')
         return redirect(url_for('lib_sections'))
 
-    # return redirect(url_for('lib_dashboard'))
     return render_template('section/delete.html', section=section)
 
 @app.route('/librarian/sections/delete/<int:section_id>/', methods=['POST'])
@@ -325,9 +315,6 @@ def delete_section_post(section_id):
         flash('Section Does Not Exist')
         return redirect(url_for('lib_sections'))
 
-    # books = section.books
-    # for book in books:
-    #     book.is_deleted = True
     
     db.session.delete(section)
     db.session.commit()
@@ -418,8 +405,6 @@ def add_book_post(section_id):
     
     books = Book.query.filter_by(title=title).first()
     if books:
-        # for book in books:
-        #     if not book.is_deleted:
         flash('This Book Already Exists')
         return redirect(url_for('add_book', section_id=section_id))
     
@@ -529,22 +514,10 @@ def edit_book_post(section_id, book_id):
         flash('Please Upload The PDF For The Book')
         return redirect(url_for('edit_book', section_id=section_id, book_id=book_id))
     
-
-    # if username != user.user_name:
-    #     user_check = User.query.filter_by(user_name=username).first()
-    #     if user_check:
-    #         flash("User Already Exists, Choose Another Username")
-    #         return redirect(url_for('student_profile_edit'))
-    
     
     if title != book.title:
         title_check = Book.query.filter_by(title=title).first()
         if title_check:
-
-    # if book_titles:
-        # for book_title in book_titles:
-            # if title != book.title:
-                # if not book_title.is_deleted:
             flash('This Book Already Exists')
             return redirect(url_for('edit_book', section_id=section_id, book_id=book_id))
     
@@ -611,7 +584,6 @@ def delete_book_post(section_id, book_id):
         flash('Book Does Not Exist')
         return redirect(url_for('open_section', section_id=section_id))
     
-    # book.is_deleted = True
 
     db.session.delete(book)
     db.session.commit()
@@ -664,9 +636,7 @@ def grant_book(username, book_id):
     user = User.query.filter_by(user_name=username).first()
     book = Book.query.filter_by(book_id=book_id).first()
     curr_date = datetime.now().date()
-    # formatted_curr_date = curr_date.strftime("%Y-%m-%d")
     return_date = curr_date + timedelta(days=7)
-    # formatted_return_date = return_date.strftime("%Y-%m-%d")
     issue = Issues_Active(user_id=user.user_id, book_id=book_id, issue_date=curr_date, end_date=return_date)
 
     user.books_issued = user.books_issued + 1
@@ -687,7 +657,6 @@ def reject_request(username, book_id):
     user = User.query.filter_by(user_name=username).first()
     book = Book.query.filter_by(book_id=book_id).first()
     curr_date = datetime.now().date()
-    # formatted_curr_date = curr_date.strftime("%Y-%m-%d")
     request = Requests_Rejected(user_id=user.user_id, book_id=book_id, date_rejected=curr_date)
     db.session.add(request)
     # db.session.commit()
@@ -716,7 +685,6 @@ def active_issues():
 @lib_check
 def revoke_book(username, book_id):
     user = User.query.filter_by(user_name=username).first()
-    # book = Book.query.filter_by(book_id=book_id).first()
     
     issue_details = Issues_Active.query.filter_by(user_id=user.user_id, book_id=book_id).first()
     curr_date = datetime.now().date()
@@ -821,17 +789,10 @@ def student_login_post():
 @authentication
 def student_dashboard():
     user = User.query.get(session['user_id'])
-    # sections_count = db.session.query(Section).count()
     sections_count = Section.query.count()
-    # books_count = db.session.query(Book).count()
-    # books_count = Book.query.filter_by(is_deleted=False).count()
     books_count = Book.query.count()
-    # requests_count = db.session.query(Requests_Active).filter_by(user_id=user.user_id).count()
     requests_count = Requests_Active.query.filter_by(user_id=user.user_id).count()
-    # curr_issues_count = db.session.query(Issues_Active).filter_by(user_id=user.user_id).count()
     curr_issues_count = Issues_Active.query.filter_by(user_id=user.user_id).count()
-    # exp_issues_count = db.session.query(Issues_Expired).filter_by(user_id=user.user_id).count()
-    # exp_issues_count = Issues_Expired.query.filter_by(user_id=user.user_id).count()
     total_issues_count = user.books_issued
 
     sections = Section.query.all()
@@ -859,7 +820,6 @@ def student_dashboard():
         num_books = 0
         section_names.append(section.title)
         for book in section.books:
-            # if not book.is_deleted:
             num_books += 1
         section_books.append(num_books)
 
