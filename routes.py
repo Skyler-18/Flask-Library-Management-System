@@ -83,14 +83,19 @@ def lib_dashboard():
     # sections_count = db.session.query(Section).count()
     sections_count = Section.query.count()
     # books_count = db.session.query(Book).count()
-    books_count = Book.query.filter_by(is_deleted=False).count()
+    # books_count = Book.query.filter_by(is_deleted=False).count()
+    books_count = Book.query.count()
     # requests_count = db.session.query(Requests_Active).count()
     requests_count = Requests_Active.query.count()
     # curr_issues_count = db.session.query(Issues_Active).count()
     curr_issues_count = Issues_Active.query.count()
     # exp_issues_count = db.session.query(Issues_Expired).count()
-    exp_issues_count = Issues_Expired.query.count()
-    all_issues_count = curr_issues_count + exp_issues_count
+    # exp_issues_count = Issues_Expired.query.count()
+    users = User.query.all()
+    all_issues_count = 0
+    for user in users:
+        all_issues_count = all_issues_count + user.books_issued
+    
 
     users = User.query.all()
     all_users = list()
@@ -107,8 +112,8 @@ def lib_dashboard():
         num_books = 0
         section_names.append(section.title)
         for book in section.books:
-            if not book.is_deleted:
-                num_books += 1
+            # if not book.is_deleted:
+            num_books += 1
         # num_books = len(section.books)
         section_books.append(num_books)
 
@@ -320,9 +325,9 @@ def delete_section_post(section_id):
         flash('Section Does Not Exist')
         return redirect(url_for('lib_sections'))
 
-    books = section.books
-    for book in books:
-        book.is_deleted = True
+    # books = section.books
+    # for book in books:
+    #     book.is_deleted = True
     
     db.session.delete(section)
     db.session.commit()
@@ -411,12 +416,12 @@ def add_book_post(section_id):
         flash('Please Upload The PDF For The Book')
         return redirect(url_for('add_book', section_id=section_id))
     
-    books = Book.query.filter_by(title=title).all()
+    books = Book.query.filter_by(title=title).first()
     if books:
-        for book in books:
-            if not book.is_deleted:
-                flash('This Book Already Exists')
-                return redirect(url_for('add_book', section_id=section_id))
+        # for book in books:
+        #     if not book.is_deleted:
+        flash('This Book Already Exists')
+        return redirect(url_for('add_book', section_id=section_id))
     
     try:
         pages = int(pages)
@@ -524,13 +529,24 @@ def edit_book_post(section_id, book_id):
         flash('Please Upload The PDF For The Book')
         return redirect(url_for('edit_book', section_id=section_id, book_id=book_id))
     
-    book_titles = Book.query.filter_by(title=title).all()
-    if book_titles:
-        for book_title in book_titles:
-            if title != book.title:
-                if not book_title.is_deleted:
-                    flash('This Book Already Exists')
-                    return redirect(url_for('edit_book', section_id=section_id, book_id=book_id))
+
+    # if username != user.user_name:
+    #     user_check = User.query.filter_by(user_name=username).first()
+    #     if user_check:
+    #         flash("User Already Exists, Choose Another Username")
+    #         return redirect(url_for('student_profile_edit'))
+    
+    
+    if title != book.title:
+        title_check = Book.query.filter_by(title=title).first()
+        if title_check:
+
+    # if book_titles:
+        # for book_title in book_titles:
+            # if title != book.title:
+                # if not book_title.is_deleted:
+            flash('This Book Already Exists')
+            return redirect(url_for('edit_book', section_id=section_id, book_id=book_id))
     
     try:
         pages = int(pages)
@@ -595,9 +611,9 @@ def delete_book_post(section_id, book_id):
         flash('Book Does Not Exist')
         return redirect(url_for('open_section', section_id=section_id))
     
-    book.is_deleted = True
+    # book.is_deleted = True
 
-    # db.session.delete(book)
+    db.session.delete(book)
     db.session.commit()
 
     books_folder = "book_pdfs/"
@@ -808,13 +824,15 @@ def student_dashboard():
     # sections_count = db.session.query(Section).count()
     sections_count = Section.query.count()
     # books_count = db.session.query(Book).count()
-    books_count = Book.query.filter_by(is_deleted=False).count()
+    # books_count = Book.query.filter_by(is_deleted=False).count()
+    books_count = Book.query.count()
     # requests_count = db.session.query(Requests_Active).filter_by(user_id=user.user_id).count()
     requests_count = Requests_Active.query.filter_by(user_id=user.user_id).count()
     # curr_issues_count = db.session.query(Issues_Active).filter_by(user_id=user.user_id).count()
     curr_issues_count = Issues_Active.query.filter_by(user_id=user.user_id).count()
     # exp_issues_count = db.session.query(Issues_Expired).filter_by(user_id=user.user_id).count()
-    exp_issues_count = Issues_Expired.query.filter_by(user_id=user.user_id).count()
+    # exp_issues_count = Issues_Expired.query.filter_by(user_id=user.user_id).count()
+    total_issues_count = user.books_issued
 
     sections = Section.query.all()
     section_issues = dict()
@@ -841,13 +859,13 @@ def student_dashboard():
         num_books = 0
         section_names.append(section.title)
         for book in section.books:
-            if not book.is_deleted:
-                num_books += 1
+            # if not book.is_deleted:
+            num_books += 1
         section_books.append(num_books)
 
     books_downloaded = user.books_downloaded
 
-    return render_template('student/student_dashboard.html', sections_count=sections_count, books_count=books_count, requests_count=requests_count, curr_issues_count=curr_issues_count, exp_issues_count=exp_issues_count, section_titles=list(section_issues.keys()), count_issues=list(section_issues.values()), section_names=section_names, section_books=section_books, books_downloaded=books_downloaded)
+    return render_template('student/student_dashboard.html', sections_count=sections_count, books_count=books_count, requests_count=requests_count, curr_issues_count=curr_issues_count, total_issues_count=total_issues_count, section_titles=list(section_issues.keys()), count_issues=list(section_issues.values()), section_names=section_names, section_books=section_books, books_downloaded=books_downloaded)
 
 
 @app.route('/student/profile')

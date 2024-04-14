@@ -20,7 +20,7 @@ class Section(db.Model):
     description = db.Column(db.String(125))
     date_created = db.Column(db.Date, nullable=False)
 
-    books = db.relationship('Book', backref='section', lazy=True)
+    books = db.relationship('Book', backref='section', lazy=True, cascade='all, delete-orphan')
     #This creates a relationship between the two tables itself using the section_id which is the foreign key in Book. Now, we don't have to give specific SQL query to select all the books from Book table where section_id in both tables is matching.
     #backref helps in getting the name of section of the book. If we try to get section.books, we will get all the books in the section and when we try to get book.section we will get complete section object in that case too.
     #lazy just optimizes our work. It restricts the code to fetch all the books of all the sections all the time. Instead, it only works when we call it explicityly.
@@ -35,7 +35,13 @@ class Book(db.Model):
     pages = db.Column(db.Integer, nullable=False)
     language = db.Column(db.String, nullable=False)
     issue_num = db.Column(db.Integer, nullable=False, default=0)
-    is_deleted = db.Column(db.Boolean, default=False)
+    # is_deleted = db.Column(db.Boolean, default=False)
+
+    requests_active = db.relationship('Requests_Active', backref='book', lazy=True, cascade='all, delete-orphan')
+    issues_active = db.relationship('Issues_Active', backref='book', lazy=True, cascade='all, delete-orphan')
+    requests_rejected = db.relationship('Requests_Rejected', backref='book', lazy=True, cascade='all, delete-orphan')
+    issues_expired = db.relationship('Issues_Expired', backref='book', lazy=True, cascade='all, delete-orphan')
+
 
 class Requests_Active(db.Model):
     ra_id = db.Column(db.Integer, primary_key=True)

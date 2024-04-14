@@ -65,7 +65,6 @@
 
     <div class="books">
         {% for book in section.books %}
-        {% if book.is_deleted == False %}
 
         <a href="{{url_for('book_details', section_id=section.section_id, book_id=book.book_id)}}">
           <div class="book">
@@ -75,7 +74,6 @@
             <h3>{{book.issue_num}} issues yet</h3>
           </div>
         </a>
-        {% endif %}
         {% endfor %}
     </div>
 {% endblock %}
