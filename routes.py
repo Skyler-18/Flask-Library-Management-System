@@ -891,6 +891,10 @@ def student_profile_edit_post():
         flash("Username Can Contain At-Most 10 Characters")
         return redirect(url_for('student_profile_edit'))
     
+    if len(name) == 0:
+        flash("Name Cannot Be Empty")
+        return redirect(url_for('student_profile_edit'))
+    
     if len(name) > 20:
         flash("Name Can Contain At-Most 20 Characters")
         return redirect(url_for('student_profile_edit'))
