@@ -1,14 +1,21 @@
 # LIBRARY MANAGEMENT SYSTEM
 
-python -m venv venv
+## Try it out yourself: `https://flask-library-management-system.onrender.com`
 
-pip install -r requirements.txt
-
+## Steps to run locally
+1. ```bash
+   python -m venv venv
+   ```
+2. ```bash
+   pip install -r requirements.txt
+```
+3. ```bash
 venv\Scripts\activate
+```
+4. ```bash
+   flask run
+```
 
-flask run
-
-<!-- ------------------------------------------------------------ -->
-
-Librarian Username: librarian
-Librarian Password: librarian
+## Login Credentials
+Librarian Username: **librarian**
+Librarian Password: **librarian**
