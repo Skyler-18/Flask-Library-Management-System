@@ -1,6 +1,7 @@
 # LIBRARY MANAGEMENT SYSTEM
 
-## Try it out yourself: `https://flask-library-management-system.onrender.com`
+## Try it out yourself
+[Check out the live app here](https://flask-library-management-system.onrender.com)
 
 ## Steps to run locally
 1. ```bash
@@ -8,13 +9,13 @@
    ```
 2. ```bash
    pip install -r requirements.txt
-```
+   ```
 3. ```bash
-venv\Scripts\activate
-```
+   venv\Scripts\activate
+   ``` 
 4. ```bash
    flask run
-```
+   ```
 
 ## Login Credentials
 Librarian Username: **librarian**
