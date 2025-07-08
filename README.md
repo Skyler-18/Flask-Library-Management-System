@@ -18,5 +18,5 @@
    ```
 
 ## Login Credentials
-Librarian Username: **librarian**
-Librarian Password: **librarian**
+- LIBRARIAN USERNAME: **librarian**
+- LIBRARIAN PASSWORD: **librarian**
